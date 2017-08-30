@@ -125,7 +125,7 @@ JSON;
 
         // handle request
         $response = $action->handle(
-            $this->getRequest('GET', [], [], ['If-None-Match' => '"60e644a56cb3048e15e62d88e311c28e5a4f6d28"']),
+            $this->getRequest('GET', [], [], ['If-None-Match' => '"' . sha1_file(__DIR__ . '/response.txt') . '"']),
             $this->getParameters(),
             $this->getContext()
         );
