@@ -55,13 +55,30 @@ class FileEngine extends ActionAbstract
 
     public function handle(RequestInterface $request, ParametersInterface $configuration, ContextInterface $context)
     {
-        $modifyTime = filemtime($this->file);
-        $extension  = pathinfo($this->file, PATHINFO_EXTENSION);
+        $sha1  = sha1_file($this->file);
+        $mtime = filemtime($this->file);
 
         $headers = [
-            'Last-Modified' => date(DateTime::HTTP, $modifyTime),
-            'ETag' => '"' . sha1_file($this->file) . '"',
+            'Last-Modified' => date(DateTime::HTTP, $mtime),
+            'ETag' => '"' . $sha1 . '"',
         ];
+
+        $match = $request->getHeader('If-None-Match');
+        if (!empty($match)) {
+            $match = trim($match, '"');
+            if ($sha1 == $match) {
+                return $this->response->build(304, $headers, '');
+            }
+        }
+
+        $since = $request->getHeader('If-Modified-Since');
+        if (!empty($since)) {
+            if ($mtime < strtotime($since)) {
+                return $this->response->build(304, $headers, '');
+            }
+        }
+
+        $extension = pathinfo($this->file, PATHINFO_EXTENSION);
 
         switch ($extension) {
             case 'json':

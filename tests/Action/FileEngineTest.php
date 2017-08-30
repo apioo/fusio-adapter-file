@@ -117,6 +117,40 @@ JSON;
         $this->assertInstanceOf(File::class, $body);
     }
 
+    public function testHandleIfNoneMatch()
+    {
+        $action = $this->getActionFactory()->factory(FileEngine::class);
+        $action->setFile(__DIR__ . '/response.txt');
+
+        // handle request
+        $response = $action->handle(
+            $this->getRequest('GET', [], [], ['If-None-Match' => '"60e644a56cb3048e15e62d88e311c28e5a4f6d28"']),
+            $this->getParameters(),
+            $this->getContext()
+        );
+
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertEquals(304, $response->getStatusCode());
+        $this->assertEquals(['last-modified' => 'Wed, 30 Aug 2017 17:41:56 GMT', 'etag' => '"60e644a56cb3048e15e62d88e311c28e5a4f6d28"'], $response->getHeaders());
+    }
+
+    public function testHandleIfModifiedSince()
+    {
+        $action = $this->getActionFactory()->factory(FileEngine::class);
+        $action->setFile(__DIR__ . '/response.txt');
+
+        // handle request
+        $response = $action->handle(
+            $this->getRequest('GET', [], [], ['If-Modified-Since' => 'Wed, 12 Aug 2018 17:41:56 GMT']),
+            $this->getParameters(),
+            $this->getContext()
+        );
+
+        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertEquals(304, $response->getStatusCode());
+        $this->assertEquals(['last-modified' => 'Wed, 30 Aug 2017 17:41:56 GMT', 'etag' => '"60e644a56cb3048e15e62d88e311c28e5a4f6d28"'], $response->getHeaders());
+    }
+
     public function testGetForm()
     {
         $action  = $this->getActionFactory()->factory(FileEngine::class);
