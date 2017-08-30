@@ -1,0 +1,32 @@
+{
+  "name": "fusio/adapter-file",
+  "description": "Adapter to serve static files",
+  "homepage": "http://fusio-project.org",
+  "keywords": ["fusio-adapter"],
+  "license": "AGPL-3.0",
+  "authors": [
+    {
+      "name": "Christoph Kappestein",
+      "email": "christoph.kappestein@gmail.com",
+      "homepage": "http://christoph.kappestein.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.6",
+    "fusio/engine": "^0.7@dev"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^5.6",
+    "phpunit/dbunit": "^2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Fusio\\Adapter\\File\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Fusio\\Adapter\\File\\Tests\\": "tests/"
+    }
+  }
+}
