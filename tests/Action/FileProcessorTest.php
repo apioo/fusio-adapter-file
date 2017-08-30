@@ -26,6 +26,7 @@ use Fusio\Engine\Form\Builder;
 use Fusio\Engine\Form\Container;
 use Fusio\Engine\ResponseInterface;
 use Fusio\Engine\Test\EngineTestCaseTrait;
+use PSX\DateTime\DateTime;
 
 /**
  * FileProcessorTest
@@ -64,7 +65,7 @@ JSON;
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(['last-modified' => 'Wed, 30 Aug 2017 17:41:34 GMT', 'etag' => '"39cdad79d91a587454cd8a4c78eaa6d6901f5e15"'], $response->getHeaders());
+        $this->assertEquals($this->getExpectHeaders(__DIR__ . '/response.json'), $response->getHeaders());
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }
 
@@ -77,5 +78,13 @@ JSON;
         $action->configure($builder, $factory);
 
         $this->assertInstanceOf(Container::class, $builder->getForm());
+    }
+
+    private function getExpectHeaders($file)
+    {
+        return [
+            'last-modified' => date(DateTime::HTTP, filemtime($file)),
+            'etag' => '"' . sha1_file($file) . '"'
+        ];
     }
 }

@@ -26,6 +26,7 @@ use Fusio\Engine\Form\Builder;
 use Fusio\Engine\Form\Container;
 use Fusio\Engine\ResponseInterface;
 use Fusio\Engine\Test\EngineTestCaseTrait;
+use PSX\DateTime\DateTime;
 use PSX\Framework\Http\Body\File;
 
 /**
@@ -66,7 +67,7 @@ JSON;
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(['last-modified' => 'Wed, 30 Aug 2017 17:41:34 GMT', 'etag' => '"39cdad79d91a587454cd8a4c78eaa6d6901f5e15"'], $response->getHeaders());
+        $this->assertEquals($this->getExpectHeaders(__DIR__ . '/response.json'), $response->getHeaders());
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }
 
@@ -92,7 +93,7 @@ JSON;
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(['last-modified' => 'Wed, 30 Aug 2017 17:41:49 GMT', 'etag' => '"1195ef0aef4c9a7d72cd998f5ad740156920ffe4"'], $response->getHeaders());
+        $this->assertEquals($this->getExpectHeaders(__DIR__ . '/response.yaml'), $response->getHeaders());
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }
 
@@ -113,7 +114,7 @@ JSON;
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(['last-modified' => 'Wed, 30 Aug 2017 17:41:56 GMT', 'etag' => '"60e644a56cb3048e15e62d88e311c28e5a4f6d28"'], $response->getHeaders());
+        $this->assertEquals($this->getExpectHeaders(__DIR__ . '/response.txt'), $response->getHeaders());
         $this->assertInstanceOf(File::class, $body);
     }
 
@@ -131,7 +132,7 @@ JSON;
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertEquals(304, $response->getStatusCode());
-        $this->assertEquals(['last-modified' => 'Wed, 30 Aug 2017 17:41:56 GMT', 'etag' => '"60e644a56cb3048e15e62d88e311c28e5a4f6d28"'], $response->getHeaders());
+        $this->assertEquals($this->getExpectHeaders(__DIR__ . '/response.txt'), $response->getHeaders());
     }
 
     public function testHandleIfModifiedSince()
@@ -148,7 +149,7 @@ JSON;
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertEquals(304, $response->getStatusCode());
-        $this->assertEquals(['last-modified' => 'Wed, 30 Aug 2017 17:41:56 GMT', 'etag' => '"60e644a56cb3048e15e62d88e311c28e5a4f6d28"'], $response->getHeaders());
+        $this->assertEquals($this->getExpectHeaders(__DIR__ . '/response.txt'), $response->getHeaders());
     }
 
     public function testGetForm()
@@ -160,5 +161,13 @@ JSON;
         $action->configure($builder, $factory);
 
         $this->assertInstanceOf(Container::class, $builder->getForm());
+    }
+
+    private function getExpectHeaders($file)
+    {
+        return [
+            'last-modified' => date(DateTime::HTTP, filemtime($file)),
+            'etag' => '"' . sha1_file($file) . '"'
+        ];
     }
 }
