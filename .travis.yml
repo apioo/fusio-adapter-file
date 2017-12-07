@@ -8,9 +8,5 @@ before_install:
   - phpenv config-rm xdebug.ini
 install:
   - composer install
-services:
-  - mysql
-before_script:
-  - mysql -e 'create database app;'
 script:
   - vendor/bin/phpunit
