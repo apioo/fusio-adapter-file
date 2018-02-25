@@ -26,7 +26,7 @@ use Fusio\Engine\ContextInterface;
 use Fusio\Engine\ParametersInterface;
 use Fusio\Engine\RequestInterface;
 use PSX\DateTime\DateTime;
-use PSX\Framework\Http;
+use PSX\Http\Writer;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -90,7 +90,7 @@ class FileEngine extends ActionAbstract
                 break;
 
             default:
-                $data = new Http\Body\File($this->file);
+                $data = new Writer\File($this->file);
         }
 
         return $this->response->build(200, $headers, $data);
