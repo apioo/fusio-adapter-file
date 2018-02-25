@@ -24,10 +24,10 @@ namespace Fusio\Adapter\File\Tests\Action;
 use Fusio\Adapter\File\Action\FileEngine;
 use Fusio\Engine\Form\Builder;
 use Fusio\Engine\Form\Container;
-use Fusio\Engine\ResponseInterface;
 use Fusio\Engine\Test\EngineTestCaseTrait;
 use PSX\DateTime\DateTime;
-use PSX\Framework\Http\Body\File;
+use PSX\Http\Environment\HttpResponseInterface;
+use PSX\Http\Writer;
 
 /**
  * FileEngineTest
@@ -65,7 +65,7 @@ class FileEngineTest extends \PHPUnit_Framework_TestCase
 }
 JSON;
 
-        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertInstanceOf(HttpResponseInterface::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals($this->getExpectHeaders(__DIR__ . '/response.json'), $response->getHeaders());
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
@@ -91,7 +91,7 @@ JSON;
 }
 JSON;
 
-        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertInstanceOf(HttpResponseInterface::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals($this->getExpectHeaders(__DIR__ . '/response.yaml'), $response->getHeaders());
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
@@ -112,10 +112,10 @@ JSON;
         /** @var File $body */
         $body = $response->getBody();
 
-        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertInstanceOf(HttpResponseInterface::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals($this->getExpectHeaders(__DIR__ . '/response.txt'), $response->getHeaders());
-        $this->assertInstanceOf(File::class, $body);
+        $this->assertInstanceOf(Writer\File::class, $body);
     }
 
     public function testHandleIfNoneMatch()
@@ -130,7 +130,7 @@ JSON;
             $this->getContext()
         );
 
-        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertInstanceOf(HttpResponseInterface::class, $response);
         $this->assertEquals(304, $response->getStatusCode());
         $this->assertEquals($this->getExpectHeaders(__DIR__ . '/response.txt'), $response->getHeaders());
     }
@@ -147,7 +147,7 @@ JSON;
             $this->getContext()
         );
 
-        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertInstanceOf(HttpResponseInterface::class, $response);
         $this->assertEquals(304, $response->getStatusCode());
         $this->assertEquals($this->getExpectHeaders(__DIR__ . '/response.txt'), $response->getHeaders());
     }

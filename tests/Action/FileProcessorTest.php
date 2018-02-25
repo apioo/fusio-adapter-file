@@ -24,9 +24,9 @@ namespace Fusio\Adapter\File\Tests\Action;
 use Fusio\Adapter\File\Action\FileProcessor;
 use Fusio\Engine\Form\Builder;
 use Fusio\Engine\Form\Container;
-use Fusio\Engine\ResponseInterface;
 use Fusio\Engine\Test\EngineTestCaseTrait;
 use PSX\DateTime\DateTime;
+use PSX\Http\Environment\HttpResponseInterface;
 
 /**
  * FileProcessorTest
@@ -63,7 +63,7 @@ class FileProcessorTest extends \PHPUnit_Framework_TestCase
 }
 JSON;
 
-        $this->assertInstanceOf(ResponseInterface::class, $response);
+        $this->assertInstanceOf(HttpResponseInterface::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals($this->getExpectHeaders(__DIR__ . '/response.json'), $response->getHeaders());
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
