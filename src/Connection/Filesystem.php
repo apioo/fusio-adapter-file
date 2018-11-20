@@ -48,11 +48,11 @@ class Filesystem implements ConnectionInterface
      */
     public function getConnection(ParametersInterface $config)
     {
-        return new Flysystem(new Adapter\Local($config->get('path')));
+        return new Flysystem(new Adapter\Local($config->get('config')));
     }
 
     public function configure(BuilderInterface $builder, ElementFactoryInterface $elementFactory)
     {
-        $builder->add($elementFactory->newInput('path', 'Path', 'text', 'Root path to the folder'));
+        $builder->add($elementFactory->newInput('config', 'Path', 'text', 'Root path to the folder'));
     }
 }
