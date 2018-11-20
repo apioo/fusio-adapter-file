@@ -47,7 +47,6 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
         $connectionFactory = $this->getConnectionFactory()->factory(Filesystem::class);
 
         $config = new Parameters([
-            'type'   => 'local',
             'config' => __DIR__ . '/../foo',
         ]);
 
