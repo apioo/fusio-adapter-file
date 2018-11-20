@@ -142,7 +142,7 @@ JSON;
 
         // handle request
         $response = $action->handle(
-            $this->getRequest('GET', [], [], ['If-Modified-Since' => 'Wed, 12 Aug 2018 17:41:56 GMT']),
+            $this->getRequest('GET', [], [], ['If-Modified-Since' => 'Wed, 12 Aug 2020 17:41:56 GMT']),
             $this->getParameters(),
             $this->getContext()
         );
