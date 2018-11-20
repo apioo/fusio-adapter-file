@@ -24,8 +24,7 @@ namespace Fusio\Adapter\File\Tests\Connection;
 use Fusio\Adapter\File\Connection\Filesystem;
 use Fusio\Engine\Form\Builder;
 use Fusio\Engine\Form\Container;
-use Fusio\Engine\Form\Element\Select;
-use Fusio\Engine\Form\Element\Textarea;
+use Fusio\Engine\Form\Element\Input;
 use Fusio\Engine\Parameters;
 use Fusio\Engine\Test\EngineTestCaseTrait;
 use League\Flysystem\FilesystemInterface;
@@ -67,8 +66,7 @@ class FilesystemTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(Container::class, $builder->getForm());
 
         $elements = $builder->getForm()->getProperty('element');
-        $this->assertEquals(2, count($elements));
-        $this->assertInstanceOf(Select::class, $elements[0]);
-        $this->assertInstanceOf(Textarea::class, $elements[1]);
+        $this->assertEquals(1, count($elements));
+        $this->assertInstanceOf(Input::class, $elements[0]);
     }
 }
