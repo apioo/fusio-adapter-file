@@ -27,7 +27,6 @@ use Fusio\Engine\Form\ElementFactoryInterface;
 use Fusio\Engine\ParametersInterface;
 use League\Flysystem\Adapter;
 use League\Flysystem\Filesystem as Flysystem;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * Filesystem
@@ -38,9 +37,6 @@ use Symfony\Component\Yaml\Yaml;
  */
 class Filesystem implements ConnectionInterface
 {
-    const TYPE_LOCAL = 'local';
-    const TYPE_FTP   = 'ftp';
-
     public function getName()
     {
         return 'Filesystem';
@@ -52,39 +48,11 @@ class Filesystem implements ConnectionInterface
      */
     public function getConnection(ParametersInterface $config)
     {
-        $settings = $config->get('config') ?: null;
-        if (!empty($settings)) {
-            $settings = Yaml::parse($settings);
-        }
-
-        return new Flysystem($this->newAdapter($config->get('type'), $settings));
+        return new Flysystem(new Adapter\Local($config->get('path')));
     }
 
     public function configure(BuilderInterface $builder, ElementFactoryInterface $elementFactory)
     {
-        $types = [
-            self::TYPE_LOCAL => 'Local',
-            self::TYPE_FTP   => 'FTP',
-        ];
-
-        $builder->add($elementFactory->newSelect('type', 'Type', $types));
-        $builder->add($elementFactory->newTextArea('config', 'Config', 'yaml', 'The config of the selected type in YAML format. Click <a ng-click="help.showDialog(\'help/connection/filesystem.md\')">here</a> for more information.'));
-    }
-
-    /**
-     * @param string $type
-     * @param mixed $config
-     * @return \League\Flysystem\Adapter\AbstractAdapter
-     */
-    private function newAdapter($type, $config)
-    {
-        switch ($type) {
-            case self::TYPE_FTP:
-                return new Adapter\Ftp(is_array($config) ? $config : []);
-
-            case self::TYPE_LOCAL:
-            default:
-                return new Adapter\Local($config && is_string($config) ? $config : sys_get_temp_dir());
-        }
+        $builder->add($elementFactory->newInput('path', 'Path', 'text', 'Root path to the folder'));
     }
 }
