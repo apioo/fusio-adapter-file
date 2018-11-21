@@ -3,6 +3,7 @@
     "Fusio\\Adapter\\File\\Action\\FileProcessor"
   ],
   "connectionClass": [
-    "Fusio\\Adapter\\File\\Connection\\Filesystem"
+    "Fusio\\Adapter\\File\\Connection\\Filesystem",
+    "Fusio\\Adapter\\File\\Connection\\Ftp"
   ]
 }
