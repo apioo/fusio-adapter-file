@@ -25,6 +25,7 @@ use Fusio\Adapter\File\Action\FileEngine;
 use Fusio\Engine\Form\Builder;
 use Fusio\Engine\Form\Container;
 use Fusio\Engine\Test\EngineTestCaseTrait;
+use PHPUnit\Framework\TestCase;
 use PSX\DateTime\DateTime;
 use PSX\Http\Environment\HttpResponseInterface;
 use PSX\Http\Writer;
@@ -36,7 +37,7 @@ use PSX\Http\Writer;
  * @license http://www.gnu.org/licenses/agpl-3.0
  * @link    http://fusio-project.org
  */
-class FileEngineTest extends \PHPUnit_Framework_TestCase
+class FileEngineTest extends TestCase
 {
     use EngineTestCaseTrait;
 

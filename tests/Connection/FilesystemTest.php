@@ -28,6 +28,7 @@ use Fusio\Engine\Form\Element\Input;
 use Fusio\Engine\Parameters;
 use Fusio\Engine\Test\EngineTestCaseTrait;
 use League\Flysystem\FilesystemInterface;
+use PHPUnit\Framework\TestCase;
 
 /**
  * FilesystemTest
@@ -36,7 +37,7 @@ use League\Flysystem\FilesystemInterface;
  * @license http://www.gnu.org/licenses/agpl-3.0
  * @link    http://fusio-project.org
  */
-class FilesystemTest extends \PHPUnit_Framework_TestCase
+class FilesystemTest extends TestCase
 {
     use EngineTestCaseTrait;
 
