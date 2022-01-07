@@ -3,7 +3,7 @@
  * Fusio
  * A web-application to create dynamically RESTful APIs
  *
- * Copyright (C) 2015-2018 Christoph Kappestein <christoph.kappestein@gmail.com>
+ * Copyright (C) 2015-2022 Christoph Kappestein <christoph.kappestein@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -27,26 +27,23 @@ use Fusio\Engine\Form\ElementFactoryInterface;
 use Fusio\Engine\ParametersInterface;
 use League\Flysystem\Adapter;
 use League\Flysystem\Filesystem as Flysystem;
+use League\Flysystem\FilesystemInterface;
 
 /**
  * Ftp
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.gnu.org/licenses/agpl-3.0
- * @link    http://fusio-project.org
+ * @link    https://www.fusio-project.org/
  */
 class Ftp implements ConnectionInterface
 {
-    public function getName()
+    public function getName(): string
     {
         return 'FTP';
     }
 
-    /**
-     * @param \Fusio\Engine\ParametersInterface $config
-     * @return \League\Flysystem\FilesystemInterface
-     */
-    public function getConnection(ParametersInterface $config)
+    public function getConnection(ParametersInterface $config): FilesystemInterface
     {
         $port = (int) $config->get('port');
         if (empty($port)) {
@@ -70,7 +67,7 @@ class Ftp implements ConnectionInterface
         return new Flysystem(new Adapter\Ftp($adapter));
     }
 
-    public function configure(BuilderInterface $builder, ElementFactoryInterface $elementFactory)
+    public function configure(BuilderInterface $builder, ElementFactoryInterface $elementFactory): void
     {
         $builder->add($elementFactory->newInput('host', 'Host', 'text', 'FTP host'));
         $builder->add($elementFactory->newInput('port', 'Port', 'number', 'FTP port (default is 21)'));
