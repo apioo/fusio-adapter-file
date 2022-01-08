@@ -27,7 +27,7 @@ use Fusio\Engine\Form\Container;
 use Fusio\Engine\Form\Element\Input;
 use Fusio\Engine\Parameters;
 use Fusio\Engine\Test\EngineTestCaseTrait;
-use League\Flysystem\FilesystemInterface;
+use League\Flysystem\FilesystemOperator;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -52,7 +52,7 @@ class FilesystemTest extends TestCase
 
         $filesystem = $connectionFactory->getConnection($config);
 
-        $this->assertInstanceOf(FilesystemInterface::class, $filesystem);
+        $this->assertInstanceOf(FilesystemOperator::class, $filesystem);
         $this->assertEquals('foobar', $filesystem->read('bar.txt'));
     }
 
@@ -66,7 +66,7 @@ class FilesystemTest extends TestCase
 
         $this->assertInstanceOf(Container::class, $builder->getForm());
 
-        $elements = $builder->getForm()->getProperty('element');
+        $elements = $builder->getForm()->getElements();
         $this->assertEquals(1, count($elements));
         $this->assertInstanceOf(Input::class, $elements[0]);
     }

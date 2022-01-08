@@ -26,6 +26,7 @@ use Fusio\Engine\ContextInterface;
 use Fusio\Engine\ParametersInterface;
 use Fusio\Engine\RequestInterface;
 use PSX\DateTime\DateTime;
+use PSX\Http\Environment\HttpResponseInterface;
 use PSX\Http\Writer;
 use Symfony\Component\Yaml\Yaml;
 
@@ -50,7 +51,7 @@ class FileEngine extends ActionAbstract
         $this->file = $file;
     }
 
-    public function handle(RequestInterface $request, ParametersInterface $configuration, ContextInterface $context)
+    public function handle(RequestInterface $request, ParametersInterface $configuration, ContextInterface $context): HttpResponseInterface
     {
         $sha1  = sha1_file($this->file);
         $mtime = filemtime($this->file);

@@ -25,9 +25,9 @@ use Fusio\Engine\ConnectionInterface;
 use Fusio\Engine\Form\BuilderInterface;
 use Fusio\Engine\Form\ElementFactoryInterface;
 use Fusio\Engine\ParametersInterface;
-use League\Flysystem\Adapter;
 use League\Flysystem\Filesystem as Flysystem;
-use League\Flysystem\FilesystemInterface;
+use League\Flysystem\FilesystemOperator;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 
 /**
  * Filesystem
@@ -43,9 +43,9 @@ class Filesystem implements ConnectionInterface
         return 'Filesystem';
     }
 
-    public function getConnection(ParametersInterface $config): FilesystemInterface
+    public function getConnection(ParametersInterface $config): FilesystemOperator
     {
-        return new Flysystem(new Adapter\Local($config->get('config')));
+        return new Flysystem(new LocalFilesystemAdapter($config->get('config')));
     }
 
     public function configure(BuilderInterface $builder, ElementFactoryInterface $elementFactory): void
