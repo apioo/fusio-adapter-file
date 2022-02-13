@@ -51,6 +51,6 @@ class FileProcessor extends FileEngine
 
     public function configure(BuilderInterface $builder, ElementFactoryInterface $elementFactory): void
     {
-        $builder->add($elementFactory->newInput('file', 'File', 'text', 'Click <a ng-click="help.showDialog(\'help/action/file.md\')">here</a> for more information.'));
+        $builder->add($elementFactory->newInput('file', 'File', 'text', 'A path to a file'));
     }
 }
