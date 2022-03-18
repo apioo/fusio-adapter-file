@@ -1,8 +1,13 @@
 {
   "actionClass": [
+    "Fusio\\Adapter\\File\\Action\\FileDirectoryDetail",
+    "Fusio\\Adapter\\File\\Action\\FileDirectoryIndex",
     "Fusio\\Adapter\\File\\Action\\FileProcessor"
   ],
   "connectionClass": [
     "Fusio\\Adapter\\File\\Connection\\Filesystem"
+  ],
+  "routesClass": [
+    "Fusio\\Adapter\\File\\Routes\\FileDirectory"
   ]
 }

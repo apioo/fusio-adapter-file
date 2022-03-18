@@ -21,9 +21,11 @@
 
 namespace Fusio\Adapter\File\Action;
 
+use Fusio\Adapter\File\Csv;
 use Fusio\Engine\ActionAbstract;
 use Fusio\Engine\ContextInterface;
 use Fusio\Engine\ParametersInterface;
+use Fusio\Engine\Request\HttpRequest;
 use Fusio\Engine\RequestInterface;
 use PSX\DateTime\DateTime;
 use PSX\Http\Environment\HttpResponseInterface;
@@ -61,30 +63,36 @@ class FileEngine extends ActionAbstract
             'ETag' => '"' . $sha1 . '"',
         ];
 
-        $match = $request->getHeader('If-None-Match');
-        if (!empty($match)) {
-            $match = trim($match, '"');
-            if ($sha1 == $match) {
-                return $this->response->build(304, $headers, '');
+        if ($request instanceof HttpRequest) {
+            $match = $request->getHeader('If-None-Match');
+            if (!empty($match)) {
+                $match = trim($match, '"');
+                if ($sha1 == $match) {
+                    return $this->response->build(304, $headers, '');
+                }
             }
-        }
 
-        $since = $request->getHeader('If-Modified-Since');
-        if (!empty($since)) {
-            if ($mtime < strtotime($since)) {
-                return $this->response->build(304, $headers, '');
+            $since = $request->getHeader('If-Modified-Since');
+            if (!empty($since)) {
+                if ($mtime < strtotime($since)) {
+                    return $this->response->build(304, $headers, '');
+                }
             }
         }
 
         $extension = pathinfo($this->file, PATHINFO_EXTENSION);
-
         switch ($extension) {
             case 'json':
-                $data = json_decode(file_get_contents($this->file));
+                $data = $this->wrap(json_decode(file_get_contents($this->file)));
                 break;
 
+            case 'yml':
             case 'yaml':
-                $data = Yaml::parse(file_get_contents($this->file));
+                $data = $this->wrap(Yaml::parse(file_get_contents($this->file)));
+                break;
+
+            case 'csv':
+                $data = $this->wrap(Csv::parseFile($this->file, $configuration->get('delimiter')));
                 break;
 
             default:
@@ -92,5 +100,13 @@ class FileEngine extends ActionAbstract
         }
 
         return $this->response->build(200, $headers, $data);
+    }
+
+    private function wrap(mixed $value): \stdClass
+    {
+        return (object) [
+            'fileName' => pathinfo($this->file, PATHINFO_BASENAME),
+            'content' => $value
+        ];
     }
 }
