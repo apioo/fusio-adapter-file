@@ -61,6 +61,6 @@ trait FileDirectoryTrait
 
     private function getUuidForFile(string $file): string
     {
-        return Uuid::uuid5('fusio-adapter-file', $file)->toString();
+        return Uuid::uuid3('8a7f57d1-c7c7-4d96-8662-6da352b2db0b', $file)->toString();
     }
 }

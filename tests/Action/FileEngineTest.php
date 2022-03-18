@@ -49,7 +49,7 @@ class FileEngineTest extends TestCase
     public function testHandleJson()
     {
         $action = $this->getActionFactory()->factory(FileEngine::class);
-        $action->setFile(__DIR__ . '/response.json');
+        $action->setFile(__DIR__ . '/../foo/response.json');
 
         // handle request
         $response = $action->handle(
@@ -61,21 +61,24 @@ class FileEngineTest extends TestCase
         $actual = json_encode($response->getBody(), JSON_PRETTY_PRINT);
         $expect = <<<JSON
 {
-    "foo": "bar",
-    "bar": "foo"
+    "fileName": "response.json",
+    "content": {
+        "foo": "bar",
+        "bar": "foo"
+    }
 }
 JSON;
 
         $this->assertInstanceOf(HttpResponseInterface::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals($this->getExpectHeaders(__DIR__ . '/response.json'), $response->getHeaders());
+        $this->assertEquals($this->getExpectHeaders(__DIR__ . '/../foo/response.json'), $response->getHeaders());
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }
 
     public function testHandleYaml()
     {
         $action = $this->getActionFactory()->factory(FileEngine::class);
-        $action->setFile(__DIR__ . '/response.yaml');
+        $action->setFile(__DIR__ . '/../foo/response.yaml');
 
         // handle request
         $response = $action->handle(
@@ -87,21 +90,24 @@ JSON;
         $actual = json_encode($response->getBody(), JSON_PRETTY_PRINT);
         $expect = <<<JSON
 {
-    "foo": "bar",
-    "bar": "foo"
+    "fileName": "response.yaml",
+    "content": {
+        "foo": "bar",
+        "bar": "foo"
+    }
 }
 JSON;
 
         $this->assertInstanceOf(HttpResponseInterface::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals($this->getExpectHeaders(__DIR__ . '/response.yaml'), $response->getHeaders());
+        $this->assertEquals($this->getExpectHeaders(__DIR__ . '/../foo/response.yaml'), $response->getHeaders());
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }
 
     public function testHandleTxt()
     {
         $action = $this->getActionFactory()->factory(FileEngine::class);
-        $action->setFile(__DIR__ . '/response.txt');
+        $action->setFile(__DIR__ . '/../foo/response.txt');
 
         // handle request
         $response = $action->handle(
@@ -115,31 +121,31 @@ JSON;
 
         $this->assertInstanceOf(HttpResponseInterface::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals($this->getExpectHeaders(__DIR__ . '/response.txt'), $response->getHeaders());
+        $this->assertEquals($this->getExpectHeaders(__DIR__ . '/../foo/response.txt'), $response->getHeaders());
         $this->assertInstanceOf(Writer\File::class, $body);
     }
 
     public function testHandleIfNoneMatch()
     {
         $action = $this->getActionFactory()->factory(FileEngine::class);
-        $action->setFile(__DIR__ . '/response.txt');
+        $action->setFile(__DIR__ . '/../foo/response.txt');
 
         // handle request
         $response = $action->handle(
-            $this->getRequest('GET', [], [], ['If-None-Match' => '"' . sha1_file(__DIR__ . '/response.txt') . '"']),
+            $this->getRequest('GET', [], [], ['If-None-Match' => '"' . sha1_file(__DIR__ . '/../foo/response.txt') . '"']),
             $this->getParameters(),
             $this->getContext()
         );
 
         $this->assertInstanceOf(HttpResponseInterface::class, $response);
         $this->assertEquals(304, $response->getStatusCode());
-        $this->assertEquals($this->getExpectHeaders(__DIR__ . '/response.txt'), $response->getHeaders());
+        $this->assertEquals($this->getExpectHeaders(__DIR__ . '/../foo/response.txt'), $response->getHeaders());
     }
 
     public function testHandleIfModifiedSince()
     {
         $action = $this->getActionFactory()->factory(FileEngine::class);
-        $action->setFile(__DIR__ . '/response.txt');
+        $action->setFile(__DIR__ . '/../foo/response.txt');
 
         // handle request
         $response = $action->handle(
@@ -150,7 +156,7 @@ JSON;
 
         $this->assertInstanceOf(HttpResponseInterface::class, $response);
         $this->assertEquals(304, $response->getStatusCode());
-        $this->assertEquals($this->getExpectHeaders(__DIR__ . '/response.txt'), $response->getHeaders());
+        $this->assertEquals($this->getExpectHeaders(__DIR__ . '/../foo/response.txt'), $response->getHeaders());
     }
 
     public function testGetForm()

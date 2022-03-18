@@ -61,13 +61,14 @@ class FileDirectoryIndex extends ActionAbstract
 
         $data = [];
         foreach ($files as $file) {
+            $path = $directory . '/' . $file;
             $data[] = [
                 'id' => $this->getUuidForFile($file),
                 'fileName' => $file,
-                'size' => filesize($directory . '/' . $file),
-                'contentType' => mime_content_type($directory . '/' . $file),
-                'sha1' => sha1_file($directory . '/' . $file),
-                'lastModified' => new \DateTime('@' . filemtime($file)),
+                'size' => filesize($path),
+                'contentType' => mime_content_type($path),
+                'sha1' => sha1_file($path),
+                'lastModified' => (new \DateTime('@' . filemtime($path)))->format(\DateTimeInterface::RFC3339),
             ];
         }
 

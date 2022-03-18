@@ -21,74 +21,61 @@
 
 namespace Fusio\Adapter\File\Tests\Action;
 
-use Fusio\Adapter\File\Action\FileProcessor;
-use Fusio\Engine\Form\Builder;
-use Fusio\Engine\Form\Container;
+use Fusio\Adapter\File\Action\FileDirectoryDetail;
+use Fusio\Adapter\File\Action\FileDirectoryIndex;
 use Fusio\Engine\Test\EngineTestCaseTrait;
 use PHPUnit\Framework\TestCase;
-use PSX\DateTime\DateTime;
 use PSX\Http\Environment\HttpResponseInterface;
 
 /**
- * FileProcessorTest
+ * FileDirectoryDetailTest
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.gnu.org/licenses/agpl-3.0
  * @link    https://www.fusio-project.org/
  */
-class FileProcessorTest extends TestCase
+class FileDirectoryDetailTest extends TestCase
 {
     use EngineTestCaseTrait;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-    }
-
     public function testHandle()
     {
-        $action = $this->getActionFactory()->factory(FileProcessor::class);
+        $action = $this->getActionFactory()->factory(FileDirectoryDetail::class);
 
         // handle request
         $response = $action->handle(
-            $this->getRequest('GET'),
-            $this->getParameters(['file' => __DIR__ . '/../foo/response.json']),
+            $this->getRequest('GET', ['id' => 'e13fe597-537e-36c2-b99a-d652c3021a36']),
+            $this->getParameters(['directory' => __DIR__ . '/../foo']),
             $this->getContext()
         );
 
         $actual = json_encode($response->getBody(), JSON_PRETTY_PRINT);
         $expect = <<<JSON
 {
-    "fileName": "response.json",
-    "content": {
-        "foo": "bar",
-        "bar": "foo"
-    }
+    "fileName": "test_semicolon.csv",
+    "content": [
+        [
+            "id",
+            "name"
+        ],
+        [
+            "1",
+            "foo"
+        ],
+        [
+            "2",
+            "bar"
+        ]
+    ]
 }
 JSON;
 
         $this->assertInstanceOf(HttpResponseInterface::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals($this->getExpectHeaders(__DIR__ . '/../foo/response.json'), $response->getHeaders());
+        $this->assertEquals([
+            'last-modified' => 'Fri, 18 Mar 2022 21:57:43 GMT',
+            'etag' => '"b5ba697f931678d3d42dbf9f9be55c7021c26622"',
+        ], $response->getHeaders());
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
-    }
-
-    public function testGetForm()
-    {
-        $action  = $this->getActionFactory()->factory(FileProcessor::class);
-        $builder = new Builder();
-        $factory = $this->getFormElementFactory();
-
-        $action->configure($builder, $factory);
-
-        $this->assertInstanceOf(Container::class, $builder->getForm());
-    }
-
-    private function getExpectHeaders($file)
-    {
-        return [
-            'last-modified' => date(DateTime::HTTP, filemtime($file)),
-            'etag' => '"' . sha1_file($file) . '"'
-        ];
     }
 }
