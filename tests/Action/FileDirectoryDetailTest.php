@@ -73,8 +73,8 @@ JSON;
         $this->assertInstanceOf(HttpResponseInterface::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals([
-            'last-modified' => 'Fri, 18 Mar 2022 21:57:43 GMT',
-            'etag' => '"b5ba697f931678d3d42dbf9f9be55c7021c26622"',
+            'last-modified' => 'Fri, 18 Mar 2022 23:15:47 GMT',
+            'etag' => '"759c145ff96ed97db41dfa923a0a9fa71f058dbe"',
         ], $response->getHeaders());
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }

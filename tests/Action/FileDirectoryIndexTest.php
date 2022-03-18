@@ -61,47 +61,47 @@ class FileDirectoryIndexTest extends TestCase
             "size": 6,
             "contentType": "text\/plain",
             "sha1": "8843d7f92416211de9ebb963ff4ce28125932878",
-            "lastModified": "2017-10-21T11:54:28+00:00"
+            "lastModified": "2022-03-18T23:16:09+00:00"
         },
         {
             "id": "11cce436-5475-3a2b-ae62-3050c552bc71",
             "fileName": "response.json",
-            "size": 37,
+            "size": 34,
             "contentType": "application\/json",
-            "sha1": "39cdad79d91a587454cd8a4c78eaa6d6901f5e15",
-            "lastModified": "2017-08-30T17:41:34+00:00"
+            "sha1": "2f21bd703e135f7c3daf9ee201552e1e83326665",
+            "lastModified": "2022-03-18T23:16:05+00:00"
         },
         {
             "id": "204bdfd3-03d7-3b08-8ab1-05cbd3642b4f",
             "fileName": "response.txt",
-            "size": 8,
+            "size": 7,
             "contentType": "text\/plain",
-            "sha1": "60e644a56cb3048e15e62d88e311c28e5a4f6d28",
-            "lastModified": "2017-08-30T17:41:56+00:00"
+            "sha1": "988881adc9fc3655077dc2d4d757d480b5ea0e11",
+            "lastModified": "2022-03-18T23:16:01+00:00"
         },
         {
             "id": "ed35cd2e-e450-3247-ad84-e4248d11a484",
             "fileName": "response.yaml",
-            "size": 24,
+            "size": 22,
             "contentType": "text\/plain",
-            "sha1": "1195ef0aef4c9a7d72cd998f5ad740156920ffe4",
-            "lastModified": "2017-08-30T17:41:49+00:00"
+            "sha1": "34673b5a4ecb6d85c9ff1d6e391a4455d3d05e13",
+            "lastModified": "2022-03-18T23:15:56+00:00"
         },
         {
             "id": "13ae3bc7-01ac-3199-b2c3-939b0fdc1682",
             "fileName": "test_comma.csv",
-            "size": 21,
+            "size": 19,
             "contentType": "text\/plain",
-            "sha1": "8e1ec5e0dfd927c4dbc7e5e5b29ca5008c08cc24",
-            "lastModified": "2022-03-18T21:57:57+00:00"
+            "sha1": "877662089544dce80691af4c7c55610161f03fd8",
+            "lastModified": "2022-03-18T23:15:51+00:00"
         },
         {
             "id": "e13fe597-537e-36c2-b99a-d652c3021a36",
             "fileName": "test_semicolon.csv",
-            "size": 21,
+            "size": 19,
             "contentType": "text\/plain",
-            "sha1": "b5ba697f931678d3d42dbf9f9be55c7021c26622",
-            "lastModified": "2022-03-18T21:57:43+00:00"
+            "sha1": "759c145ff96ed97db41dfa923a0a9fa71f058dbe",
+            "lastModified": "2022-03-18T23:15:47+00:00"
         }
     ]
 }
