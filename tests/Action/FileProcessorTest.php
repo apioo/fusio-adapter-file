@@ -84,7 +84,7 @@ JSON;
         $this->assertInstanceOf(Container::class, $builder->getForm());
     }
 
-    private function getExpectHeaders($file)
+    private function getExpectHeaders(string $file): array
     {
         return [
             'last-modified' => date(DateTime::HTTP, filemtime($file)),

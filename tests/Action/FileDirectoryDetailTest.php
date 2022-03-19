@@ -73,10 +73,15 @@ JSON;
 
         $this->assertInstanceOf(HttpResponseInterface::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals([
-            'last-modified' => date(DateTime::HTTP, filemtime(__DIR__ . '/../foo/test_semicolon.csv')),
-            'etag' => '"759c145ff96ed97db41dfa923a0a9fa71f058dbe"',
-        ], $response->getHeaders());
+        $this->assertEquals($this->getExpectHeaders(__DIR__ . '/../foo/test_semicolon.csv'), $response->getHeaders());
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
+    }
+
+    private function getExpectHeaders(string $file): array
+    {
+        return [
+            'last-modified' => date(DateTime::HTTP, filemtime($file)),
+            'etag' => '"' . sha1_file($file) . '"'
+        ];
     }
 }
