@@ -53,6 +53,10 @@ trait FileDirectoryTrait
                 continue;
             }
 
+            if (!is_file($directory . '/' . $file)) {
+                continue;
+            }
+
             $result[] = $file;
         }
 
