@@ -7,7 +7,7 @@
   "connectionClass": [
     "Fusio\\Adapter\\File\\Connection\\Filesystem"
   ],
-  "routesClass": [
-    "Fusio\\Adapter\\File\\Routes\\FileDirectory"
+  "generatorClass": [
+    "Fusio\\Adapter\\File\\Generator\\FileDirectory"
   ]
 }
