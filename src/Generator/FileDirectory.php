@@ -58,18 +58,16 @@ class FileDirectory implements ProviderInterface
             throw new \RuntimeException('Provided directory does not exist');
         }
 
-        $prefix = $this->getPrefix($basePath);
-
-        $directoryIndexAction = $setup->addAction($prefix . '_Directory_Index', FileDirectoryIndex::class, PhpClass::class, [
+        $directoryIndexAction = $setup->addAction('File_Index', FileDirectoryIndex::class, PhpClass::class, [
             'directory' => $directory,
         ]);
 
-        $directoryDetailAction = $setup->addAction($prefix . '_Directory_Detail', FileDirectoryDetail::class, PhpClass::class, [
+        $directoryDetailAction = $setup->addAction('File_Detail', FileDirectoryDetail::class, PhpClass::class, [
             'directory' => $directory,
         ]);
 
-        $schemaParameters = $setup->addSchema('File_Directory_Index_Parameters', $this->schemaBuilder->getParameters());
-        $schemaResponse = $setup->addSchema('File_Directory_Index_Response', $this->schemaBuilder->getResponse());
+        $schemaParameters = $setup->addSchema('File_Index_Parameters', $this->schemaBuilder->getParameters());
+        $schemaResponse = $setup->addSchema('File_Index_Response', $this->schemaBuilder->getResponse());
 
         $setup->addRoute(1, '/', 'Fusio\Impl\Controller\SchemaApiController', [], [
             [
@@ -110,10 +108,5 @@ class FileDirectory implements ProviderInterface
     public function configure(BuilderInterface $builder, ElementFactoryInterface $elementFactory): void
     {
         $builder->add($elementFactory->newInput('directory', 'Directory', 'text', 'A path to a directory which you want expose'));
-    }
-
-    private function getPrefix(string $path): string
-    {
-        return implode('_', array_map('ucfirst', array_filter(explode('/', $path))));
     }
 }
