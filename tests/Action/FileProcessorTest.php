@@ -21,11 +21,10 @@
 
 namespace Fusio\Adapter\File\Tests\Action;
 
+use Fusio\Adapter\Fcgi\Tests\FileTestCase;
 use Fusio\Adapter\File\Action\FileProcessor;
 use Fusio\Engine\Form\Builder;
 use Fusio\Engine\Form\Container;
-use Fusio\Engine\Test\EngineTestCaseTrait;
-use PHPUnit\Framework\TestCase;
 use PSX\DateTime\DateTime;
 use PSX\Http\Environment\HttpResponseInterface;
 
@@ -36,15 +35,8 @@ use PSX\Http\Environment\HttpResponseInterface;
  * @license http://www.gnu.org/licenses/agpl-3.0
  * @link    https://www.fusio-project.org/
  */
-class FileProcessorTest extends TestCase
+class FileProcessorTest extends FileTestCase
 {
-    use EngineTestCaseTrait;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-    }
-
     public function testHandle()
     {
         $action = $this->getActionFactory()->factory(FileProcessor::class);

@@ -6,6 +6,6 @@ response. You can install the adapter with the following steps inside your
 Fusio project:
 
     composer require fusio/adapter-file
-    php bin/fusio system:register Fusio\Adapter\File\Adapter
+    php bin/fusio system:register "Fusio\Adapter\File\Adapter"
 
-[Fusio]: http://fusio-project.org/
+[Fusio]: https://www.fusio-project.org/

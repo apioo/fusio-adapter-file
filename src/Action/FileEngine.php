@@ -43,11 +43,6 @@ class FileEngine extends ActionAbstract
 {
     protected ?string $file;
 
-    public function __construct(?string $file = null)
-    {
-        $this->file = $file;
-    }
-
     public function setFile(?string $file): void
     {
         $this->file = $file;

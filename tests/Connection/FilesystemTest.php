@@ -21,14 +21,13 @@
 
 namespace Fusio\Adapter\File\Tests\Connection;
 
+use Fusio\Adapter\Fcgi\Tests\FileTestCase;
 use Fusio\Adapter\File\Connection\Filesystem;
 use Fusio\Engine\Form\Builder;
 use Fusio\Engine\Form\Container;
 use Fusio\Engine\Form\Element\Input;
 use Fusio\Engine\Parameters;
-use Fusio\Engine\Test\EngineTestCaseTrait;
 use League\Flysystem\FilesystemOperator;
-use PHPUnit\Framework\TestCase;
 
 /**
  * FilesystemTest
@@ -37,10 +36,8 @@ use PHPUnit\Framework\TestCase;
  * @license http://www.gnu.org/licenses/agpl-3.0
  * @link    https://www.fusio-project.org/
  */
-class FilesystemTest extends TestCase
+class FilesystemTest extends FileTestCase
 {
-    use EngineTestCaseTrait;
-
     public function testGetConnection()
     {
         /** @var Filesystem $connectionFactory */

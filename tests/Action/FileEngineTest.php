@@ -21,11 +21,10 @@
 
 namespace Fusio\Adapter\File\Tests\Action;
 
+use Fusio\Adapter\Fcgi\Tests\FileTestCase;
 use Fusio\Adapter\File\Action\FileEngine;
 use Fusio\Engine\Form\Builder;
 use Fusio\Engine\Form\Container;
-use Fusio\Engine\Test\EngineTestCaseTrait;
-use PHPUnit\Framework\TestCase;
 use PSX\DateTime\DateTime;
 use PSX\Http\Environment\HttpResponseInterface;
 use PSX\Http\Writer;
@@ -37,15 +36,8 @@ use PSX\Http\Writer;
  * @license http://www.gnu.org/licenses/agpl-3.0
  * @link    https://www.fusio-project.org/
  */
-class FileEngineTest extends TestCase
+class FileEngineTest extends FileTestCase
 {
-    use EngineTestCaseTrait;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-    }
-
     public function testHandleJson()
     {
         $action = $this->getActionFactory()->factory(FileEngine::class);

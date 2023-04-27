@@ -21,10 +21,8 @@
 
 namespace Fusio\Adapter\File\Tests\Action;
 
+use Fusio\Adapter\Fcgi\Tests\FileTestCase;
 use Fusio\Adapter\File\Action\FileDirectoryDetail;
-use Fusio\Adapter\File\Action\FileDirectoryIndex;
-use Fusio\Engine\Test\EngineTestCaseTrait;
-use PHPUnit\Framework\TestCase;
 use PSX\DateTime\DateTime;
 use PSX\Http\Environment\HttpResponseInterface;
 
@@ -35,10 +33,8 @@ use PSX\Http\Environment\HttpResponseInterface;
  * @license http://www.gnu.org/licenses/agpl-3.0
  * @link    https://www.fusio-project.org/
  */
-class FileDirectoryDetailTest extends TestCase
+class FileDirectoryDetailTest extends FileTestCase
 {
-    use EngineTestCaseTrait;
-
     public function testHandle()
     {
         $action = $this->getActionFactory()->factory(FileDirectoryDetail::class);

@@ -21,9 +21,8 @@
 
 namespace Fusio\Adapter\File\Tests\Action;
 
+use Fusio\Adapter\Fcgi\Tests\FileTestCase;
 use Fusio\Adapter\File\Action\FileDirectoryIndex;
-use Fusio\Engine\Test\EngineTestCaseTrait;
-use PHPUnit\Framework\TestCase;
 use PSX\Http\Environment\HttpResponseInterface;
 
 /**
@@ -33,10 +32,8 @@ use PSX\Http\Environment\HttpResponseInterface;
  * @license http://www.gnu.org/licenses/agpl-3.0
  * @link    https://www.fusio-project.org/
  */
-class FileDirectoryIndexTest extends TestCase
+class FileDirectoryIndexTest extends FileTestCase
 {
-    use EngineTestCaseTrait;
-
     public function testHandle()
     {
         $action = $this->getActionFactory()->factory(FileDirectoryIndex::class);
