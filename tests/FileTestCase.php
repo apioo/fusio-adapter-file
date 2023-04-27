@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Fusio\Adapter\Fcgi\Tests;
+namespace Fusio\Adapter\File\Tests;
 
 use Fusio\Adapter\File\Action\FileDirectoryDetail;
 use Fusio\Adapter\File\Action\FileDirectoryIndex;

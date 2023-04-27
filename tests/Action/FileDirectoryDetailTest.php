@@ -21,8 +21,8 @@
 
 namespace Fusio\Adapter\File\Tests\Action;
 
-use Fusio\Adapter\Fcgi\Tests\FileTestCase;
 use Fusio\Adapter\File\Action\FileDirectoryDetail;
+use Fusio\Adapter\File\Tests\FileTestCase;
 use PSX\DateTime\DateTime;
 use PSX\Http\Environment\HttpResponseInterface;
 

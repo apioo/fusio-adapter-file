@@ -21,8 +21,8 @@
 
 namespace Fusio\Adapter\File\Tests\Connection;
 
-use Fusio\Adapter\Fcgi\Tests\FileTestCase;
 use Fusio\Adapter\File\Connection\Filesystem;
+use Fusio\Adapter\File\Tests\FileTestCase;
 use Fusio\Engine\Form\Builder;
 use Fusio\Engine\Form\Container;
 use Fusio\Engine\Form\Element\Input;

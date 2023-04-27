@@ -21,8 +21,8 @@
 
 namespace Fusio\Adapter\File\Tests\Action;
 
-use Fusio\Adapter\Fcgi\Tests\FileTestCase;
 use Fusio\Adapter\File\Action\FileDirectoryIndex;
+use Fusio\Adapter\File\Tests\FileTestCase;
 use PSX\Http\Environment\HttpResponseInterface;
 
 /**
