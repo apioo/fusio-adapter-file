@@ -23,7 +23,6 @@ namespace Fusio\Adapter\File\Tests\Action;
 
 use Fusio\Adapter\File\Action\FileDirectoryDetail;
 use Fusio\Adapter\File\Tests\FileTestCase;
-use PSX\DateTime\DateTime;
 use PSX\Http\Environment\HttpResponseInterface;
 
 /**
@@ -76,7 +75,7 @@ JSON;
     private function getExpectHeaders(string $file): array
     {
         return [
-            'last-modified' => date(DateTime::HTTP, filemtime($file)),
+            'last-modified' => date(\DateTimeInterface::RFC3339, filemtime($file)),
             'etag' => '"' . sha1_file($file) . '"'
         ];
     }
