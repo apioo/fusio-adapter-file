@@ -27,7 +27,6 @@ use Fusio\Engine\ContextInterface;
 use Fusio\Engine\ParametersInterface;
 use Fusio\Engine\Request\HttpRequest;
 use Fusio\Engine\RequestInterface;
-use PSX\DateTime\DateTime;
 use PSX\Http\Environment\HttpResponseInterface;
 use PSX\Http\Exception\InternalServerErrorException;
 use PSX\Http\Writer;
@@ -56,7 +55,7 @@ class FileEngine extends ActionAbstract
         $mtime = filemtime($file);
 
         $headers = [
-            'Last-Modified' => date(DateTime::HTTP, $mtime),
+            'Last-Modified' => date(\DateTimeInterface::RFC3339, $mtime),
             'ETag' => '"' . $sha1 . '"',
         ];
 
@@ -99,7 +98,7 @@ class FileEngine extends ActionAbstract
         return $this->response->build(200, $headers, $data);
     }
 
-    private function wrap(mixed $value, string $file): \stdClass
+    private function wrap(mixed $value, string $file): object
     {
         return (object) [
             'fileName' => pathinfo($file, PATHINFO_BASENAME),
