@@ -29,6 +29,7 @@ use Fusio\Engine\Request\HttpRequest;
 use Fusio\Engine\RequestInterface;
 use PSX\DateTime\DateTime;
 use PSX\Http\Environment\HttpResponseInterface;
+use PSX\Http\Exception\InternalServerErrorException;
 use PSX\Http\Writer;
 use Symfony\Component\Yaml\Yaml;
 
@@ -41,7 +42,7 @@ use Symfony\Component\Yaml\Yaml;
  */
 class FileEngine extends ActionAbstract
 {
-    protected ?string $file;
+    protected ?string $file = null;
 
     public function setFile(?string $file): void
     {
@@ -50,8 +51,9 @@ class FileEngine extends ActionAbstract
 
     public function handle(RequestInterface $request, ParametersInterface $configuration, ContextInterface $context): HttpResponseInterface
     {
-        $sha1  = sha1_file($this->file);
-        $mtime = filemtime($this->file);
+        $file  = $this->file ?? throw new InternalServerErrorException('No file configured');
+        $sha1  = sha1_file($file);
+        $mtime = filemtime($file);
 
         $headers = [
             'Last-Modified' => date(DateTime::HTTP, $mtime),
@@ -75,32 +77,32 @@ class FileEngine extends ActionAbstract
             }
         }
 
-        $extension = pathinfo($this->file, PATHINFO_EXTENSION);
+        $extension = pathinfo($file, PATHINFO_EXTENSION);
         switch ($extension) {
             case 'json':
-                $data = $this->wrap(json_decode(file_get_contents($this->file)));
+                $data = $this->wrap(json_decode(file_get_contents($file)), $file);
                 break;
 
             case 'yml':
             case 'yaml':
-                $data = $this->wrap(Yaml::parse(file_get_contents($this->file)));
+                $data = $this->wrap(Yaml::parse(file_get_contents($file)), $file);
                 break;
 
             case 'csv':
-                $data = $this->wrap(Csv::parseFile($this->file, $configuration->get('delimiter')));
+                $data = $this->wrap(Csv::parseFile($file, $configuration->get('delimiter')), $file);
                 break;
 
             default:
-                $data = new Writer\File($this->file);
+                $data = new Writer\File($file);
         }
 
         return $this->response->build(200, $headers, $data);
     }
 
-    private function wrap(mixed $value): \stdClass
+    private function wrap(mixed $value, string $file): \stdClass
     {
         return (object) [
-            'fileName' => pathinfo($this->file, PATHINFO_BASENAME),
+            'fileName' => pathinfo($file, PATHINFO_BASENAME),
             'content' => $value
         ];
     }

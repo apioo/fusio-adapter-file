@@ -35,17 +35,17 @@ use PSX\Schema\Type\TypeAbstract;
  */
 class SchemaBuilder
 {
-    public function getParameters()
+    public function getParameters(): array
     {
         return $this->readSchema(__DIR__ . '/schema/file-directory/parameters.json');
     }
 
-    public function getResponse()
+    public function getResponse(): array
     {
         return $this->readSchema(__DIR__ . '/schema/file-directory/response.json');
     }
 
-    private function readSchema(string $file)
+    private function readSchema(string $file): array
     {
         return \json_decode(\file_get_contents($file), true);
     }
