@@ -59,8 +59,9 @@ class FileEngine extends ActionAbstract
             'ETag' => '"' . $sha1 . '"',
         ];
 
-        if ($request instanceof HttpRequest) {
-            $match = $request->getHeader('If-None-Match');
+        $requestContext = $request->getContext();
+        if ($requestContext instanceof HttpRequest) {
+            $match = $requestContext->getHeader('If-None-Match');
             if (!empty($match)) {
                 $match = trim($match, '"');
                 if ($sha1 == $match) {
@@ -68,7 +69,7 @@ class FileEngine extends ActionAbstract
                 }
             }
 
-            $since = $request->getHeader('If-Modified-Since');
+            $since = $requestContext->getHeader('If-Modified-Since');
             if (!empty($since)) {
                 if ($mtime < strtotime($since)) {
                     return $this->response->build(304, $headers, '');
