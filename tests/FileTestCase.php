@@ -23,6 +23,7 @@ namespace Fusio\Adapter\File\Tests;
 
 use Fusio\Adapter\File\Action\FileDirectoryDetail;
 use Fusio\Adapter\File\Action\FileDirectoryIndex;
+use Fusio\Adapter\File\Action\FileEngine;
 use Fusio\Adapter\File\Action\FileProcessor;
 use Fusio\Adapter\File\Connection\Filesystem;
 use Fusio\Adapter\File\Generator\FileDirectory;
@@ -48,6 +49,7 @@ abstract class FileTestCase extends TestCase
         $container->set(FileDirectoryDetail::class, new FileDirectoryDetail($runtime));
         $container->set(FileDirectoryIndex::class, new FileDirectoryIndex($runtime));
         $container->set(FileProcessor::class, new FileProcessor($runtime));
+        $container->set(FileEngine::class, new FileEngine($runtime));
         $container->set(FileDirectory::class, new FileDirectory());
     }
 }
