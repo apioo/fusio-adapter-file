@@ -25,7 +25,6 @@ use Fusio\Adapter\File\Csv;
 use Fusio\Engine\ActionAbstract;
 use Fusio\Engine\ContextInterface;
 use Fusio\Engine\ParametersInterface;
-use Fusio\Engine\Request\HttpRequest;
 use Fusio\Engine\Request\HttpRequestContext;
 use Fusio\Engine\RequestInterface;
 use PSX\Http\Environment\HttpResponseInterface;
