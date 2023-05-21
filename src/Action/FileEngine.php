@@ -26,6 +26,7 @@ use Fusio\Engine\ActionAbstract;
 use Fusio\Engine\ContextInterface;
 use Fusio\Engine\ParametersInterface;
 use Fusio\Engine\Request\HttpRequest;
+use Fusio\Engine\Request\HttpRequestContext;
 use Fusio\Engine\RequestInterface;
 use PSX\Http\Environment\HttpResponseInterface;
 use PSX\Http\Exception\InternalServerErrorException;
@@ -60,8 +61,8 @@ class FileEngine extends ActionAbstract
         ];
 
         $requestContext = $request->getContext();
-        if ($requestContext instanceof HttpRequest) {
-            $match = $requestContext->getHeader('If-None-Match');
+        if ($requestContext instanceof HttpRequestContext) {
+            $match = $requestContext->getRequest()->getHeader('If-None-Match');
             if (!empty($match)) {
                 $match = trim($match, '"');
                 if ($sha1 == $match) {
@@ -69,7 +70,7 @@ class FileEngine extends ActionAbstract
                 }
             }
 
-            $since = $requestContext->getHeader('If-Modified-Since');
+            $since = $requestContext->getRequest()->getHeader('If-Modified-Since');
             if (!empty($since)) {
                 if ($mtime < strtotime($since)) {
                     return $this->response->build(304, $headers, '');
@@ -77,24 +78,12 @@ class FileEngine extends ActionAbstract
             }
         }
 
-        $extension = pathinfo($file, PATHINFO_EXTENSION);
-        switch ($extension) {
-            case 'json':
-                $data = $this->wrap(json_decode(file_get_contents($file)), $file);
-                break;
-
-            case 'yml':
-            case 'yaml':
-                $data = $this->wrap(Yaml::parse(file_get_contents($file)), $file);
-                break;
-
-            case 'csv':
-                $data = $this->wrap(Csv::parseFile($file, $configuration->get('delimiter')), $file);
-                break;
-
-            default:
-                $data = new Writer\File($file);
-        }
+        $data = match (pathinfo($file, PATHINFO_EXTENSION)) {
+            'json' => $this->wrap(json_decode(file_get_contents($file)), $file),
+            'yml', 'yaml' => $this->wrap(Yaml::parse(file_get_contents($file)), $file),
+            'csv' => $this->wrap(Csv::parseFile($file, $configuration->get('delimiter')), $file),
+            default => new Writer\File($file),
+        };
 
         return $this->response->build(200, $headers, $data);
     }
