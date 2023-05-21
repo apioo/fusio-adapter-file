@@ -29,6 +29,13 @@ use Fusio\Engine\Form\ElementFactoryInterface;
 use Fusio\Engine\ParametersInterface;
 use Fusio\Engine\Generator\ProviderInterface;
 use Fusio\Engine\Generator\SetupInterface;
+use Fusio\Model\Backend\Action;
+use Fusio\Model\Backend\ActionConfig;
+use Fusio\Model\Backend\Operation;
+use Fusio\Model\Backend\OperationParameters;
+use Fusio\Model\Backend\OperationSchema;
+use Fusio\Model\Backend\Schema;
+use Fusio\Model\Backend\SchemaSource;
 
 /**
  * FileDirectory
@@ -58,55 +65,106 @@ class FileDirectory implements ProviderInterface
             throw new \RuntimeException('Provided directory does not exist');
         }
 
-        $directoryIndexAction = $setup->addAction('File_Index', FileDirectoryIndex::class, PhpClass::class, [
-            'directory' => $directory,
-        ]);
+        $setup->addSchema($this->makeIndexSchema());
 
-        $directoryDetailAction = $setup->addAction('File_Detail', FileDirectoryDetail::class, PhpClass::class, [
-            'directory' => $directory,
-        ]);
+        $setup->addAction($this->makeIndexAction($directory));
+        $setup->addAction($this->makeDetailAction($directory));
 
-        $schemaParameters = $setup->addSchema('File_Index_Parameters', $this->schemaBuilder->getParameters());
-        $schemaResponse = $setup->addSchema('File_Index_Response', $this->schemaBuilder->getResponse());
-
-        $setup->addRoute(1, '/', 'Fusio\Impl\Controller\SchemaApiController', [], [
-            [
-                'version' => 1,
-                'methods' => [
-                    'GET' => [
-                        'active' => true,
-                        'public' => true,
-                        'description' => 'Returns a collection of files',
-                        'parameters' => $schemaParameters,
-                        'responses' => [
-                            200 => $schemaResponse,
-                        ],
-                        'action' => $directoryIndexAction,
-                    ],
-                ],
-            ]
-        ]);
-
-        $setup->addRoute(1, '/:id', 'Fusio\Impl\Controller\SchemaApiController', [], [
-            [
-                'version' => 1,
-                'methods' => [
-                    'GET' => [
-                        'active' => true,
-                        'public' => true,
-                        'description' => 'Returns a single file',
-                        'responses' => [
-                            200 => -1,
-                        ],
-                        'action' => $directoryDetailAction,
-                    ],
-                ],
-            ]
-        ]);
+        $setup->addOperation($this->makeIndexOperation());
+        $setup->addOperation($this->makeDetailOperation());
     }
 
     public function configure(BuilderInterface $builder, ElementFactoryInterface $elementFactory): void
     {
         $builder->add($elementFactory->newInput('directory', 'Directory', 'text', 'A path to a directory which you want expose'));
     }
+
+    private function makeIndexSchema(): Schema
+    {
+        $schema = new Schema();
+        $schema->setName('File_Index_Response');
+        $schema->setSource(SchemaSource::from(\json_decode(file_get_contents(__DIR__ . '/schema/file-directory/response.json'))));
+        return $schema;
+    }
+
+    private function makeIndexAction(string $directory): Action
+    {
+        $action = new Action();
+        $action->setName('File_Index');
+        $action->setClass(FileDirectoryIndex::class);
+        $action->setEngine(PhpClass::class);
+        $action->setConfig(ActionConfig::fromArray([
+            'directory' => $directory,
+        ]));
+        return $action;
+    }
+
+    private function makeDetailAction(string $directory): Action
+    {
+        $action = new Action();
+        $action->setName('File_Detail');
+        $action->setClass(FileDirectoryDetail::class);
+        $action->setEngine(PhpClass::class);
+        $action->setConfig(ActionConfig::fromArray([
+            'directory' => $directory,
+        ]));
+        return $action;
+    }
+
+    private function makeIndexOperation(): Operation
+    {
+        $startIndexSchema = new OperationSchema();
+        $startIndexSchema->setType('integer');
+
+        $countSchema = new OperationSchema();
+        $countSchema->setType('integer');
+
+        $sortBySchema = new OperationSchema();
+        $sortBySchema->setType('string');
+
+        $sortOrderSchema = new OperationSchema();
+        $sortOrderSchema->setType('string');
+
+        $filterBySchema = new OperationSchema();
+        $filterBySchema->setType('string');
+
+        $filterOpSchema = new OperationSchema();
+        $filterOpSchema->setType('string');
+
+        $filterValueSchema = new OperationSchema();
+        $filterValueSchema->setType('string');
+
+        $parameters = new OperationParameters();
+        $parameters->put('startIndex', $startIndexSchema);
+        $parameters->put('count', $countSchema);
+        $parameters->put('sortBy', $sortBySchema);
+        $parameters->put('sortOrder', $sortOrderSchema);
+        $parameters->put('filterBy', $filterBySchema);
+        $parameters->put('filterOp', $filterOpSchema);
+        $parameters->put('filterValue', $filterValueSchema);
+
+        $operation = new Operation();
+        $operation->setName('getAll');
+        $operation->setDescription('Returns a collection of files');
+        $operation->setHttpMethod('GET');
+        $operation->setHttpPath('/');
+        $operation->setHttpCode(200);
+        $operation->setParameters($parameters);
+        $operation->setOutgoing('File_Index_Response');
+        return $operation;
+    }
+
+    private function makeDetailOperation(): Operation
+    {
+        $operation = new Operation();
+        $operation->setName('get');
+        $operation->setDescription('Returns a single file');
+        $operation->setHttpMethod('GET');
+        $operation->setHttpPath('/:id');
+        $operation->setHttpCode(200);
+        $operation->setOutgoing('Passthru');
+
+        return $operation;
+    }
+
 }
