@@ -21,7 +21,7 @@
 
 namespace Fusio\Adapter\File\Connection;
 
-use Fusio\Engine\ConnectionInterface;
+use Fusio\Engine\ConnectionAbstract;
 use Fusio\Engine\Form\BuilderInterface;
 use Fusio\Engine\Form\ElementFactoryInterface;
 use Fusio\Engine\ParametersInterface;
@@ -36,7 +36,7 @@ use League\Flysystem\Local\LocalFilesystemAdapter;
  * @license http://www.gnu.org/licenses/agpl-3.0
  * @link    https://www.fusio-project.org/
  */
-class Filesystem implements ConnectionInterface
+class Filesystem extends ConnectionAbstract
 {
     public function getName(): string
     {
