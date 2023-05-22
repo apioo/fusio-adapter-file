@@ -36,13 +36,13 @@ use PSX\Http\Environment\HttpResponseInterface;
  * @license http://www.gnu.org/licenses/agpl-3.0
  * @link    https://www.fusio-project.org/
  */
-class FileDirectoryIndex extends ActionAbstract
+class FileDirectoryGetAll extends ActionAbstract
 {
     use FileDirectoryTrait;
 
     public function getName(): string
     {
-        return 'File-Directory-Index';
+        return 'File-Directory-GetAll';
     }
 
     public function handle(RequestInterface $request, ParametersInterface $configuration, ContextInterface $context): HttpResponseInterface

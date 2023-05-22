@@ -21,8 +21,8 @@
 
 namespace Fusio\Adapter\File\Tests;
 
-use Fusio\Adapter\File\Action\FileDirectoryDetail;
-use Fusio\Adapter\File\Action\FileDirectoryIndex;
+use Fusio\Adapter\File\Action\FileDirectoryGet;
+use Fusio\Adapter\File\Action\FileDirectoryGetAll;
 use Fusio\Adapter\File\Action\FileEngine;
 use Fusio\Adapter\File\Action\FileProcessor;
 use Fusio\Adapter\File\Connection\Filesystem;
@@ -46,8 +46,8 @@ abstract class FileTestCase extends TestCase
     protected function configure(Runtime $runtime, Container $container): void
     {
         $container->set(Filesystem::class, new Filesystem());
-        $container->set(FileDirectoryDetail::class, new FileDirectoryDetail($runtime));
-        $container->set(FileDirectoryIndex::class, new FileDirectoryIndex($runtime));
+        $container->set(FileDirectoryGet::class, new FileDirectoryGet($runtime));
+        $container->set(FileDirectoryGetAll::class, new FileDirectoryGetAll($runtime));
         $container->set(FileProcessor::class, new FileProcessor($runtime));
         $container->set(FileEngine::class, new FileEngine($runtime));
         $container->set(FileDirectory::class, new FileDirectory());

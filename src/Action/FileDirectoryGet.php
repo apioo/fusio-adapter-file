@@ -30,19 +30,19 @@ use PSX\Http\Environment\HttpResponseInterface;
 use PSX\Http\Exception as StatusCode;
 
 /**
- * FileDirectoryDetail
+ * FileDirectoryGet
  *
  * @author  Christoph Kappestein <christoph.kappestein@gmail.com>
  * @license http://www.gnu.org/licenses/agpl-3.0
  * @link    https://www.fusio-project.org/
  */
-class FileDirectoryDetail extends FileEngine
+class FileDirectoryGet extends FileEngine
 {
     use FileDirectoryTrait;
 
     public function getName(): string
     {
-        return 'File-Directory-Detail';
+        return 'File-Directory-Get';
     }
 
     public function handle(RequestInterface $request, ParametersInterface $configuration, ContextInterface $context): HttpResponseInterface

@@ -21,7 +21,7 @@
 
 namespace Fusio\Adapter\File\Tests\Action;
 
-use Fusio\Adapter\File\Action\FileDirectoryDetail;
+use Fusio\Adapter\File\Action\FileDirectoryGet;
 use Fusio\Adapter\File\Tests\FileTestCase;
 use PSX\Http\Environment\HttpResponseInterface;
 
@@ -36,7 +36,7 @@ class FileDirectoryDetailTest extends FileTestCase
 {
     public function testHandle()
     {
-        $action = $this->getActionFactory()->factory(FileDirectoryDetail::class);
+        $action = $this->getActionFactory()->factory(FileDirectoryGet::class);
 
         // handle request
         $response = $action->handle(

@@ -21,7 +21,7 @@
 
 namespace Fusio\Adapter\File\Tests\Action;
 
-use Fusio\Adapter\File\Action\FileDirectoryIndex;
+use Fusio\Adapter\File\Action\FileDirectoryGetAll;
 use Fusio\Adapter\File\Tests\FileTestCase;
 use PSX\Http\Environment\HttpResponseInterface;
 
@@ -36,7 +36,7 @@ class FileDirectoryIndexTest extends FileTestCase
 {
     public function testHandle()
     {
-        $action = $this->getActionFactory()->factory(FileDirectoryIndex::class);
+        $action = $this->getActionFactory()->factory(FileDirectoryGetAll::class);
 
         // handle request
         $response = $action->handle(

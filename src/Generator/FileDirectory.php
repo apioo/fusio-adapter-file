@@ -21,21 +21,20 @@
 
 namespace Fusio\Adapter\File\Generator;
 
-use Fusio\Adapter\File\Action\FileDirectoryDetail;
-use Fusio\Adapter\File\Action\FileDirectoryIndex;
+use Fusio\Adapter\File\Action\FileDirectoryGet;
+use Fusio\Adapter\File\Action\FileDirectoryGetAll;
 use Fusio\Engine\Factory\Resolver\PhpClass;
 use Fusio\Engine\Form\BuilderInterface;
 use Fusio\Engine\Form\ElementFactoryInterface;
-use Fusio\Engine\ParametersInterface;
 use Fusio\Engine\Generator\ProviderInterface;
 use Fusio\Engine\Generator\SetupInterface;
+use Fusio\Engine\ParametersInterface;
+use Fusio\Engine\Schema\SchemaBuilder;
+use Fusio\Engine\Schema\SchemaName;
 use Fusio\Model\Backend\Action;
 use Fusio\Model\Backend\ActionConfig;
 use Fusio\Model\Backend\Operation;
-use Fusio\Model\Backend\OperationParameters;
-use Fusio\Model\Backend\OperationSchema;
 use Fusio\Model\Backend\Schema;
-use Fusio\Model\Backend\SchemaSource;
 
 /**
  * FileDirectory
@@ -46,12 +45,9 @@ use Fusio\Model\Backend\SchemaSource;
  */
 class FileDirectory implements ProviderInterface
 {
-    private SchemaBuilder $schemaBuilder;
-
-    public function __construct()
-    {
-        $this->schemaBuilder = new SchemaBuilder();
-    }
+    private const SCHEMA_GET_ALL = 'Elasticsearch_GetAll';
+    private const ACTION_GET_ALL = 'Elasticsearch_GetAll';
+    private const ACTION_GET = 'Elasticsearch_Get';
 
     public function getName(): string
     {
@@ -65,13 +61,13 @@ class FileDirectory implements ProviderInterface
             throw new \RuntimeException('Provided directory does not exist');
         }
 
-        $setup->addSchema($this->makeIndexSchema());
+        $setup->addSchema($this->makeGetAllSchema());
 
-        $setup->addAction($this->makeIndexAction($directory));
-        $setup->addAction($this->makeDetailAction($directory));
+        $setup->addAction($this->makeGetAllAction($directory));
+        $setup->addAction($this->makeGetAction($directory));
 
-        $setup->addOperation($this->makeIndexOperation());
-        $setup->addOperation($this->makeDetailOperation());
+        $setup->addOperation($this->makeGetAllOperation());
+        $setup->addOperation($this->makeGetOperation());
     }
 
     public function configure(BuilderInterface $builder, ElementFactoryInterface $elementFactory): void
@@ -79,19 +75,19 @@ class FileDirectory implements ProviderInterface
         $builder->add($elementFactory->newInput('directory', 'Directory', 'text', 'A path to a directory which you want expose'));
     }
 
-    private function makeIndexSchema(): Schema
+    private function makeGetAllSchema(): Schema
     {
         $schema = new Schema();
-        $schema->setName('File_Index_Response');
-        $schema->setSource(SchemaSource::from(\json_decode(file_get_contents(__DIR__ . '/schema/file-directory/response.json'))));
+        $schema->setName(self::SCHEMA_GET_ALL);
+        $schema->setSource(SchemaBuilder::makeCollectionResponse(self::SCHEMA_GET_ALL, \json_decode(\file_get_contents(__DIR__ . '/schema/file.json'))));
         return $schema;
     }
 
-    private function makeIndexAction(string $directory): Action
+    private function makeGetAllAction(string $directory): Action
     {
         $action = new Action();
-        $action->setName('File_Index');
-        $action->setClass(FileDirectoryIndex::class);
+        $action->setName(self::ACTION_GET_ALL);
+        $action->setClass(FileDirectoryGetAll::class);
         $action->setEngine(PhpClass::class);
         $action->setConfig(ActionConfig::fromArray([
             'directory' => $directory,
@@ -99,11 +95,11 @@ class FileDirectory implements ProviderInterface
         return $action;
     }
 
-    private function makeDetailAction(string $directory): Action
+    private function makeGetAction(string $directory): Action
     {
         $action = new Action();
-        $action->setName('File_Detail');
-        $action->setClass(FileDirectoryDetail::class);
+        $action->setName(self::ACTION_GET);
+        $action->setClass(FileDirectoryGet::class);
         $action->setEngine(PhpClass::class);
         $action->setConfig(ActionConfig::fromArray([
             'directory' => $directory,
@@ -111,50 +107,21 @@ class FileDirectory implements ProviderInterface
         return $action;
     }
 
-    private function makeIndexOperation(): Operation
+    private function makeGetAllOperation(): Operation
     {
-        $startIndexSchema = new OperationSchema();
-        $startIndexSchema->setType('integer');
-
-        $countSchema = new OperationSchema();
-        $countSchema->setType('integer');
-
-        $sortBySchema = new OperationSchema();
-        $sortBySchema->setType('string');
-
-        $sortOrderSchema = new OperationSchema();
-        $sortOrderSchema->setType('string');
-
-        $filterBySchema = new OperationSchema();
-        $filterBySchema->setType('string');
-
-        $filterOpSchema = new OperationSchema();
-        $filterOpSchema->setType('string');
-
-        $filterValueSchema = new OperationSchema();
-        $filterValueSchema->setType('string');
-
-        $parameters = new OperationParameters();
-        $parameters->put('startIndex', $startIndexSchema);
-        $parameters->put('count', $countSchema);
-        $parameters->put('sortBy', $sortBySchema);
-        $parameters->put('sortOrder', $sortOrderSchema);
-        $parameters->put('filterBy', $filterBySchema);
-        $parameters->put('filterOp', $filterOpSchema);
-        $parameters->put('filterValue', $filterValueSchema);
-
         $operation = new Operation();
         $operation->setName('getAll');
         $operation->setDescription('Returns a collection of files');
         $operation->setHttpMethod('GET');
         $operation->setHttpPath('/');
         $operation->setHttpCode(200);
-        $operation->setParameters($parameters);
-        $operation->setOutgoing('File_Index_Response');
+        $operation->setParameters(SchemaBuilder::makeCollectionParameters());
+        $operation->setOutgoing(self::SCHEMA_GET_ALL);
+        $operation->setAction(self::ACTION_GET_ALL);
         return $operation;
     }
 
-    private function makeDetailOperation(): Operation
+    private function makeGetOperation(): Operation
     {
         $operation = new Operation();
         $operation->setName('get');
@@ -162,7 +129,8 @@ class FileDirectory implements ProviderInterface
         $operation->setHttpMethod('GET');
         $operation->setHttpPath('/:id');
         $operation->setHttpCode(200);
-        $operation->setOutgoing('Passthru');
+        $operation->setOutgoing(SchemaName::PASSTHRU);
+        $operation->setAction(self::ACTION_GET);
 
         return $operation;
     }
