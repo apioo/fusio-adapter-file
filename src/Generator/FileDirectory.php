@@ -31,10 +31,10 @@ use Fusio\Engine\Generator\SetupInterface;
 use Fusio\Engine\ParametersInterface;
 use Fusio\Engine\Schema\SchemaBuilder;
 use Fusio\Engine\Schema\SchemaName;
-use Fusio\Model\Backend\Action;
 use Fusio\Model\Backend\ActionConfig;
-use Fusio\Model\Backend\Operation;
-use Fusio\Model\Backend\Schema;
+use Fusio\Model\Backend\ActionCreate;
+use Fusio\Model\Backend\OperationCreate;
+use Fusio\Model\Backend\SchemaCreate;
 
 /**
  * FileDirectory
@@ -75,17 +75,17 @@ class FileDirectory implements ProviderInterface
         $builder->add($elementFactory->newInput('directory', 'Directory', 'text', 'A path to a directory which you want expose'));
     }
 
-    private function makeGetAllSchema(): Schema
+    private function makeGetAllSchema(): SchemaCreate
     {
-        $schema = new Schema();
+        $schema = new SchemaCreate();
         $schema->setName(self::SCHEMA_GET_ALL);
         $schema->setSource(SchemaBuilder::makeCollectionResponse(self::SCHEMA_GET_ALL, \json_decode(\file_get_contents(__DIR__ . '/schema/file.json'))));
         return $schema;
     }
 
-    private function makeGetAllAction(string $directory): Action
+    private function makeGetAllAction(string $directory): ActionCreate
     {
-        $action = new Action();
+        $action = new ActionCreate();
         $action->setName(self::ACTION_GET_ALL);
         $action->setClass(FileDirectoryGetAll::class);
         $action->setEngine(PhpClass::class);
@@ -95,9 +95,9 @@ class FileDirectory implements ProviderInterface
         return $action;
     }
 
-    private function makeGetAction(string $directory): Action
+    private function makeGetAction(string $directory): ActionCreate
     {
-        $action = new Action();
+        $action = new ActionCreate();
         $action->setName(self::ACTION_GET);
         $action->setClass(FileDirectoryGet::class);
         $action->setEngine(PhpClass::class);
@@ -107,9 +107,9 @@ class FileDirectory implements ProviderInterface
         return $action;
     }
 
-    private function makeGetAllOperation(): Operation
+    private function makeGetAllOperation(): OperationCreate
     {
-        $operation = new Operation();
+        $operation = new OperationCreate();
         $operation->setName('getAll');
         $operation->setDescription('Returns a collection of files');
         $operation->setHttpMethod('GET');
@@ -121,9 +121,9 @@ class FileDirectory implements ProviderInterface
         return $operation;
     }
 
-    private function makeGetOperation(): Operation
+    private function makeGetOperation(): OperationCreate
     {
-        $operation = new Operation();
+        $operation = new OperationCreate();
         $operation->setName('get');
         $operation->setDescription('Returns a single file');
         $operation->setHttpMethod('GET');
