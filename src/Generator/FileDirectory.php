@@ -54,7 +54,7 @@ class FileDirectory implements ProviderInterface
         return 'File-Directory';
     }
 
-    public function setup(SetupInterface $setup, string $basePath, ParametersInterface $configuration): void
+    public function setup(SetupInterface $setup, ParametersInterface $configuration): void
     {
         $directory = $configuration->get('directory');
         if (!is_dir($directory)) {
