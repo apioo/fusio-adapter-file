@@ -22,11 +22,13 @@
 namespace Fusio\Adapter\File\Action;
 
 use Fusio\Adapter\File\Csv;
-use Fusio\Engine\ActionAbstract;
+use Fusio\Engine\Action\RuntimeInterface;
+use Fusio\Engine\ActionInterface;
 use Fusio\Engine\ContextInterface;
 use Fusio\Engine\ParametersInterface;
 use Fusio\Engine\Request\HttpRequestContext;
 use Fusio\Engine\RequestInterface;
+use Fusio\Engine\Response\FactoryInterface;
 use PSX\Http\Environment\HttpResponseInterface;
 use PSX\Http\Exception\InternalServerErrorException;
 use PSX\Http\Writer;
@@ -39,9 +41,16 @@ use Symfony\Component\Yaml\Yaml;
  * @license http://www.gnu.org/licenses/agpl-3.0
  * @link    https://www.fusio-project.org/
  */
-class FileEngine extends ActionAbstract
+class FileEngine implements ActionInterface
 {
     protected ?string $file = null;
+
+    private FactoryInterface $response;
+
+    public function __construct(RuntimeInterface $runtime)
+    {
+        $this->response = $runtime->getResponse();
+    }
 
     public function setFile(?string $file): void
     {

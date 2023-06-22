@@ -21,6 +21,7 @@
 
 namespace Fusio\Adapter\File\Action;
 
+use Fusio\Engine\ConfigurableInterface;
 use Fusio\Engine\ContextInterface;
 use Fusio\Engine\Form\BuilderInterface;
 use Fusio\Engine\Form\ElementFactoryInterface;
@@ -35,7 +36,7 @@ use PSX\Http\Environment\HttpResponseInterface;
  * @license http://www.gnu.org/licenses/agpl-3.0
  * @link    https://www.fusio-project.org/
  */
-class FileProcessor extends FileEngine
+class FileProcessor extends FileEngine implements ConfigurableInterface
 {
     public function getName(): string
     {
