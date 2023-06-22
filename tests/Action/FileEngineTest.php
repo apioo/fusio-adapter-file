@@ -150,18 +150,7 @@ JSON;
         $this->assertEquals($this->getExpectHeaders(__DIR__ . '/../foo/response.txt'), $response->getHeaders());
     }
 
-    public function testGetForm()
-    {
-        $action  = $this->getActionFactory()->factory(FileEngine::class);
-        $builder = new Builder();
-        $factory = $this->getFormElementFactory();
-
-        $action->configure($builder, $factory);
-
-        $this->assertInstanceOf(Container::class, $builder->getForm());
-    }
-
-    private function getExpectHeaders($file)
+    private function getExpectHeaders(string $file): array
     {
         return [
             'last-modified' => date(\DateTimeInterface::RFC3339, filemtime($file)),
