@@ -43,7 +43,7 @@ use Symfony\Component\Yaml\Yaml;
  */
 class FileEngine implements ActionInterface
 {
-    protected ?string $file = null;
+    private ?string $file = null;
 
     private FactoryInterface $response;
 
