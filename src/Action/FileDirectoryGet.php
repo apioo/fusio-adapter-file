@@ -21,6 +21,7 @@
 
 namespace Fusio\Adapter\File\Action;
 
+use Fusio\Engine\ConfigurableInterface;
 use Fusio\Engine\ContextInterface;
 use Fusio\Engine\Form\BuilderInterface;
 use Fusio\Engine\Form\ElementFactoryInterface;
@@ -36,7 +37,7 @@ use PSX\Http\Exception as StatusCode;
  * @license http://www.gnu.org/licenses/agpl-3.0
  * @link    https://www.fusio-project.org/
  */
-class FileDirectoryGet extends FileEngine
+class FileDirectoryGet extends FileEngine implements ConfigurableInterface
 {
     use FileDirectoryTrait;
 
