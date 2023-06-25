@@ -14,7 +14,6 @@ return static function (ContainerConfigurator $container) {
     $services->set(Filesystem::class);
     $services->set(FileDirectoryGet::class);
     $services->set(FileDirectoryGetAll::class);
-    $services->set(FileEngine::class);
     $services->set(FileProcessor::class);
     $services->set(FileDirectory::class);
 };
