@@ -21,7 +21,6 @@
 
 namespace Fusio\Adapter\File\Action;
 
-use Fusio\Engine\ConfigurableInterface;
 use Fusio\Engine\ContextInterface;
 use Fusio\Engine\Form\BuilderInterface;
 use Fusio\Engine\Form\ElementFactoryInterface;
@@ -37,7 +36,7 @@ use PSX\Http\Exception as StatusCode;
  * @license http://www.gnu.org/licenses/agpl-3.0
  * @link    https://www.fusio-project.org/
  */
-class FileDirectoryGet extends FileEngine implements ConfigurableInterface
+class FileDirectoryGet extends FileReaderAbstract
 {
     use FileDirectoryTrait;
 
@@ -60,9 +59,7 @@ class FileDirectoryGet extends FileEngine implements ConfigurableInterface
             throw new StatusCode\NotFoundException('Provided id does not exist');
         }
 
-        $this->setFile($file);
-
-        return parent::handle($request, $configuration, $context);
+        return $this->read($file, $request);
     }
 
     public function configure(BuilderInterface $builder, ElementFactoryInterface $elementFactory): void

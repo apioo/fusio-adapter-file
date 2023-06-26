@@ -49,7 +49,6 @@ abstract class FileTestCase extends TestCase
         $container->set(FileDirectoryGet::class, new FileDirectoryGet($runtime));
         $container->set(FileDirectoryGetAll::class, new FileDirectoryGetAll($runtime));
         $container->set(FileProcessor::class, new FileProcessor($runtime));
-        $container->set(FileEngine::class, new FileEngine($runtime));
         $container->set(FileDirectory::class, new FileDirectory());
     }
 }

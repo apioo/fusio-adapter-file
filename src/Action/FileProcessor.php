@@ -41,7 +41,7 @@ use Symfony\Component\Yaml\Yaml;
  * @license http://www.gnu.org/licenses/agpl-3.0
  * @link    https://www.fusio-project.org/
  */
-class FileProcessor extends ActionAbstract
+class FileProcessor extends FileReaderAbstract
 {
     public function getName(): string
     {
@@ -55,56 +55,11 @@ class FileProcessor extends ActionAbstract
             throw new ConfigurationException('No file configured');
         }
 
-        if (!is_file($file)) {
-            throw new ConfigurationException('Configured file does not exist');
-        }
-
-        $sha1  = sha1_file($file);
-        $mtime = filemtime($file);
-
-        $headers = [
-            'Last-Modified' => date(\DateTimeInterface::RFC3339, $mtime),
-            'ETag' => '"' . $sha1 . '"',
-        ];
-
-        $requestContext = $request->getContext();
-        if ($requestContext instanceof HttpRequestContext) {
-            $match = $requestContext->getRequest()->getHeader('If-None-Match');
-            if (!empty($match)) {
-                $match = trim($match, '"');
-                if ($sha1 == $match) {
-                    return $this->response->build(304, $headers, '');
-                }
-            }
-
-            $since = $requestContext->getRequest()->getHeader('If-Modified-Since');
-            if (!empty($since)) {
-                if ($mtime < strtotime($since)) {
-                    return $this->response->build(304, $headers, '');
-                }
-            }
-        }
-
-        $data = match (pathinfo($file, PATHINFO_EXTENSION)) {
-            'json' => $this->wrap(json_decode(file_get_contents($file)), $file),
-            'yml', 'yaml' => $this->wrap(Yaml::parse(file_get_contents($file)), $file),
-            'csv' => $this->wrap(Csv::parseFile($file, $configuration->get('delimiter')), $file),
-            default => new Writer\File($file),
-        };
-
-        return $this->response->build(200, $headers, $data);
+        return $this->read($file, $request);
     }
 
     public function configure(BuilderInterface $builder, ElementFactoryInterface $elementFactory): void
     {
         $builder->add($elementFactory->newInput('file', 'File', 'text', 'A path to a file'));
-    }
-
-    private function wrap(mixed $value, string $file): object
-    {
-        return (object) [
-            'fileName' => pathinfo($file, PATHINFO_BASENAME),
-            'content' => $value
-        ];
     }
 }
