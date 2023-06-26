@@ -26,6 +26,7 @@ use Fusio\Adapter\File\Tests\FileTestCase;
 use Fusio\Engine\Form\Builder;
 use Fusio\Engine\Form\Container;
 use PSX\Http\Environment\HttpResponseInterface;
+use PSX\Http\Writer;
 
 /**
  * FileProcessorTest
@@ -62,6 +63,114 @@ JSON;
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals($this->getExpectHeaders(__DIR__ . '/../foo/response.json'), $response->getHeaders());
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
+    }
+
+    public function testHandleJson()
+    {
+        $action = $this->getActionFactory()->factory(FileProcessor::class);
+
+        // handle request
+        $response = $action->handle(
+            $this->getRequest('GET'),
+            $this->getParameters(['file' => __DIR__ . '/../foo/response.json']),
+            $this->getContext()
+        );
+
+        $actual = json_encode($response->getBody(), JSON_PRETTY_PRINT);
+        $expect = <<<JSON
+{
+    "fileName": "response.json",
+    "content": {
+        "foo": "bar",
+        "bar": "foo"
+    }
+}
+JSON;
+
+        $this->assertInstanceOf(HttpResponseInterface::class, $response);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals($this->getExpectHeaders(__DIR__ . '/../foo/response.json'), $response->getHeaders());
+        $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
+    }
+
+    public function testHandleYaml()
+    {
+        $action = $this->getActionFactory()->factory(FileProcessor::class);
+
+        // handle request
+        $response = $action->handle(
+            $this->getRequest('GET'),
+            $this->getParameters(['file' => __DIR__ . '/../foo/response.yaml']),
+            $this->getContext()
+        );
+
+        $actual = json_encode($response->getBody(), JSON_PRETTY_PRINT);
+        $expect = <<<JSON
+{
+    "fileName": "response.yaml",
+    "content": {
+        "foo": "bar",
+        "bar": "foo"
+    }
+}
+JSON;
+
+        $this->assertInstanceOf(HttpResponseInterface::class, $response);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals($this->getExpectHeaders(__DIR__ . '/../foo/response.yaml'), $response->getHeaders());
+        $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
+    }
+
+    public function testHandleTxt()
+    {
+        $action = $this->getActionFactory()->factory(FileProcessor::class);
+
+        // handle request
+        $response = $action->handle(
+            $this->getRequest('GET'),
+            $this->getParameters(['file' => __DIR__ . '/../foo/response.txt']),
+            $this->getContext()
+        );
+
+        /** @var Writer\File $body */
+        $body = $response->getBody();
+
+        $this->assertInstanceOf(HttpResponseInterface::class, $response);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals($this->getExpectHeaders(__DIR__ . '/../foo/response.txt'), $response->getHeaders());
+        $this->assertInstanceOf(Writer\File::class, $body);
+    }
+
+    public function testHandleIfNoneMatch()
+    {
+        $action = $this->getActionFactory()->factory(FileProcessor::class);
+
+        // handle request
+        $response = $action->handle(
+            $this->getRequest('GET', [], [], ['If-None-Match' => '"' . sha1_file(__DIR__ . '/../foo/response.txt') . '"']),
+            $this->getParameters(['file' => __DIR__ . '/../foo/response.txt']),
+            $this->getContext()
+        );
+
+        $this->assertInstanceOf(HttpResponseInterface::class, $response);
+        $this->assertEquals(304, $response->getStatusCode());
+        $this->assertEquals($this->getExpectHeaders(__DIR__ . '/../foo/response.txt'), $response->getHeaders());
+    }
+
+    public function testHandleIfModifiedSince()
+    {
+        $action = $this->getActionFactory()->factory(FileProcessor::class);
+
+        // handle request
+        $response = $action->handle(
+            $this->getRequest('GET', [], [], ['If-Modified-Since' => date(\DateTime::RFC7231, time() + 3600)]),
+            $this->getParameters(['file' => __DIR__ . '/../foo/response.txt']),
+            $this->getContext()
+        );
+
+        $this->assertInstanceOf(HttpResponseInterface::class, $response);
+        $this->assertEquals(304, $response->getStatusCode());
+        $this->assertEquals($this->getExpectHeaders(__DIR__ . '/../foo/response.txt'), $response->getHeaders());
     }
 
     public function testGetForm()
