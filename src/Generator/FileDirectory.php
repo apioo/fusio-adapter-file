@@ -88,7 +88,6 @@ class FileDirectory implements ProviderInterface
         $action = new ActionCreate();
         $action->setName(self::ACTION_GET_ALL);
         $action->setClass(FileDirectoryGetAll::class);
-        $action->setEngine(PhpClass::class);
         $action->setConfig(ActionConfig::fromArray([
             'directory' => $directory,
         ]));
@@ -100,7 +99,6 @@ class FileDirectory implements ProviderInterface
         $action = new ActionCreate();
         $action->setName(self::ACTION_GET);
         $action->setClass(FileDirectoryGet::class);
-        $action->setEngine(PhpClass::class);
         $action->setConfig(ActionConfig::fromArray([
             'directory' => $directory,
         ]));
