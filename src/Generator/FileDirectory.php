@@ -45,9 +45,9 @@ use Fusio\Model\Backend\SchemaCreate;
  */
 class FileDirectory implements ProviderInterface
 {
-    private const SCHEMA_GET_ALL = 'Elasticsearch_GetAll';
-    private const ACTION_GET_ALL = 'Elasticsearch_GetAll';
-    private const ACTION_GET = 'Elasticsearch_Get';
+    private const SCHEMA_GET_ALL = 'FileDirectory_GetAll';
+    private const ACTION_GET_ALL = 'FileDirectory_GetAll';
+    private const ACTION_GET = 'FileDirectory_Get';
 
     public function getName(): string
     {
@@ -132,5 +132,4 @@ class FileDirectory implements ProviderInterface
 
         return $operation;
     }
-
 }

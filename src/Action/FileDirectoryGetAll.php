@@ -49,8 +49,10 @@ class FileDirectoryGetAll extends ActionAbstract
     {
         $directory = $this->getDirectory($configuration);
 
-        $startIndex   = (int) $request->get('startIndex');
-        $itemsPerPage = 16;
+        $startIndex = (int) $request->get('startIndex');
+        $count = (int) $request->get('count');
+
+        $itemsPerPage = $count >= 1 && $count <= 64 ? $count : 16;
         $startIndex   = max($startIndex, 0);
 
         $files = $this->getFilesInDirectory($directory);
