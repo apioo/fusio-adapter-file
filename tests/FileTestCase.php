@@ -21,16 +21,9 @@
 
 namespace Fusio\Adapter\File\Tests;
 
-use Fusio\Adapter\File\Action\FileDirectoryGet;
-use Fusio\Adapter\File\Action\FileDirectoryGetAll;
-use Fusio\Adapter\File\Action\FileEngine;
-use Fusio\Adapter\File\Action\FileProcessor;
-use Fusio\Adapter\File\Connection\Filesystem;
-use Fusio\Adapter\File\Generator\FileDirectory;
-use Fusio\Engine\Action\Runtime;
+use Fusio\Adapter\File\Adapter;
 use Fusio\Engine\Test\EngineTestCaseTrait;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\DependencyInjection\Container;
 
 /**
  * FileTestCase
@@ -43,12 +36,8 @@ abstract class FileTestCase extends TestCase
 {
     use EngineTestCaseTrait;
 
-    protected function configure(Runtime $runtime, Container $container): void
+    protected function getAdapterClass(): string
     {
-        $container->set(Filesystem::class, new Filesystem());
-        $container->set(FileDirectoryGet::class, new FileDirectoryGet($runtime));
-        $container->set(FileDirectoryGetAll::class, new FileDirectoryGetAll($runtime));
-        $container->set(FileProcessor::class, new FileProcessor($runtime));
-        $container->set(FileDirectory::class, new FileDirectory());
+        return Adapter::class;
     }
 }
