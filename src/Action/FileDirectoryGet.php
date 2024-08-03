@@ -54,7 +54,7 @@ class FileDirectoryGet extends FileReaderAbstract
         }
 
         $file = $this->findFileById($directory, $id);
-        if (empty($file)) {
+        if ($file !== null) {
             throw new StatusCode\NotFoundException('Provided id does not exist');
         }
 

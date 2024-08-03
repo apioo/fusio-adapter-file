@@ -31,7 +31,7 @@ class Csv
 {
     public static function parseFile(string $file, ?string $delimiter = null): array
     {
-        if (empty($delimiter) || strlen($delimiter) !== 1) {
+        if ($delimiter === null || strlen($delimiter) !== 1) {
             $delimiter = ';';
         }
 
