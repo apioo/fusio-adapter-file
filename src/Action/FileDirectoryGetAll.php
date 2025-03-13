@@ -26,6 +26,7 @@ use Fusio\Engine\Form\BuilderInterface;
 use Fusio\Engine\Form\ElementFactoryInterface;
 use Fusio\Engine\ParametersInterface;
 use Fusio\Engine\RequestInterface;
+use PSX\DateTime\LocalDateTime;
 use PSX\Http\Environment\HttpResponseInterface;
 
 /**
@@ -63,13 +64,15 @@ class FileDirectoryGetAll extends ActionAbstract
         $data = [];
         foreach ($files as $file) {
             $path = $directory . '/' . $file;
+            $modifiedTime = (string) filemtime($path);
+
             $data[] = [
                 'id' => $this->getUuidForFile($file),
                 'fileName' => $file,
                 'size' => filesize($path),
                 'contentType' => mime_content_type($path),
                 'sha1' => sha1_file($path),
-                'lastModified' => (new \DateTime('@' . filemtime($path)))->format(\DateTimeInterface::RFC3339),
+                'lastModified' => (new \DateTime('@' . $modifiedTime))->format(\DateTimeInterface::RFC3339),
             ];
         }
 

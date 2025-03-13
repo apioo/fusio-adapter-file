@@ -46,9 +46,9 @@ trait FileDirectoryTrait
     private function getFilesInDirectory(string $directory): array
     {
         $result = [];
-        $files = scandir($directory);
+        $files = (array) scandir($directory);
         foreach ($files as $file) {
-            if ($file[0] === '.') {
+            if ($file === false || $file[0] === '.') {
                 continue;
             }
 

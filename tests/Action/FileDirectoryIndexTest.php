@@ -88,7 +88,7 @@ class FileDirectoryIndexTest extends FileTestCase
             "id": "13ae3bc7-01ac-3199-b2c3-939b0fdc1682",
             "fileName": "test_comma.csv",
             "size": 19,
-            "contentType": "text\/plain",
+            "contentType": "text\/csv",
             "sha1": "877662089544dce80691af4c7c55610161f03fd8",
             "lastModified": "0000-00-00T00:00:00+00:00"
         },

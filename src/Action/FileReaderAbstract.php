@@ -29,6 +29,7 @@ use Fusio\Engine\Request\HttpRequestContext;
 use Fusio\Engine\RequestInterface;
 use PSX\Http\Environment\HttpResponseInterface;
 use PSX\Http\Writer;
+use PSX\Json\Parser;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -46,8 +47,8 @@ abstract class FileReaderAbstract extends ActionAbstract
             throw new ConfigurationException('Configured file does not exist');
         }
 
-        $sha1  = sha1_file($file);
-        $mtime = filemtime($file);
+        $sha1  = (string) sha1_file($file);
+        $mtime = (int) filemtime($file);
 
         $headers = [
             'Last-Modified' => date(\DateTimeInterface::RFC3339, $mtime),
@@ -73,8 +74,8 @@ abstract class FileReaderAbstract extends ActionAbstract
         }
 
         $data = match (pathinfo($file, PATHINFO_EXTENSION)) {
-            'json' => $this->wrap(json_decode(file_get_contents($file)), $file),
-            'yml', 'yaml' => $this->wrap(Yaml::parse(file_get_contents($file)), $file),
+            'json' => $this->wrap(Parser::decode((string) file_get_contents($file)), $file),
+            'yml', 'yaml' => $this->wrap(Yaml::parse((string) file_get_contents($file)), $file),
             'csv' => $this->wrap(Csv::parseFile($file), $file),
             default => new Writer\File($file),
         };

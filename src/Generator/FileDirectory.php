@@ -34,6 +34,7 @@ use Fusio\Model\Backend\ActionConfig;
 use Fusio\Model\Backend\ActionCreate;
 use Fusio\Model\Backend\OperationCreate;
 use Fusio\Model\Backend\SchemaCreate;
+use PSX\Json\Parser;
 
 /**
  * FileDirectory
@@ -78,7 +79,7 @@ class FileDirectory implements ProviderInterface
     {
         $schema = new SchemaCreate();
         $schema->setName(self::SCHEMA_GET_ALL);
-        $schema->setSource(SchemaBuilder::makeCollectionResponse(self::SCHEMA_GET_ALL, \json_decode(\file_get_contents(__DIR__ . '/schema/file.json'))));
+        $schema->setSource(SchemaBuilder::makeCollectionResponse(self::SCHEMA_GET_ALL, Parser::decodeAsObject((string) \file_get_contents(__DIR__ . '/schema/file.json'))));
         return $schema;
     }
 
