@@ -44,6 +44,12 @@ class FileDirectoryIndexTest extends FileTestCase
             $this->getContext()
         );
 
+        if (PHP_VERSION_ID >= 80400) {
+            $expectContentType = 'text/csv';
+        } else {
+            $expectContentType = 'text/plain';
+        }
+
         $actual = json_encode($response->getBody(), JSON_PRETTY_PRINT);
         $actual = preg_replace('/([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2})/', '0000-00-00T00:00:00', $actual);
         $expect = <<<JSON
@@ -88,7 +94,7 @@ class FileDirectoryIndexTest extends FileTestCase
             "id": "13ae3bc7-01ac-3199-b2c3-939b0fdc1682",
             "fileName": "test_comma.csv",
             "size": 19,
-            "contentType": "text\/csv",
+            "contentType": "{$expectContentType}",
             "sha1": "877662089544dce80691af4c7c55610161f03fd8",
             "lastModified": "0000-00-00T00:00:00+00:00"
         },
