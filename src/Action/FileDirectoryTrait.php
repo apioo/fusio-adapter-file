@@ -20,8 +20,15 @@
 
 namespace Fusio\Adapter\File\Action;
 
+use DateTimeImmutable;
+use Exception;
 use Fusio\Engine\Exception\ConfigurationException;
 use Fusio\Engine\ParametersInterface;
+use Fusio\Engine\RequestInterface;
+use League\Flysystem\FileAttributes;
+use League\Flysystem\Filesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
+use PSX\DateTime\LocalDateTime;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -33,37 +40,67 @@ use Ramsey\Uuid\Uuid;
  */
 trait FileDirectoryTrait
 {
-    private function getDirectory(ParametersInterface $configuration): string
+    protected function getDirectory(ParametersInterface $configuration): Filesystem
     {
         $directory = $configuration->get('directory');
-        if (!is_dir($directory)) {
-            throw new ConfigurationException('Configured directory does not exist');
+        if (empty($directory)) {
+            throw new ConfigurationException('No directory configured');
         }
 
-        return $directory;
+        return new Filesystem(new LocalFilesystemAdapter($directory));
     }
 
-    private function getFilesInDirectory(string $directory): array
+    private function getFilesInDirectory(Filesystem $connection, ?RequestInterface $request): array
     {
-        $result = [];
-        $files = (array) scandir($directory);
-        foreach ($files as $file) {
-            if ($file === false || $file[0] === '.') {
-                continue;
+        $result = $connection->listContents('.');
+        $result = $result->filter(static function ($object) use ($request) {
+            if (!$object instanceof FileAttributes) {
+                return false;
             }
 
-            if (!is_file($directory . '/' . $file)) {
-                continue;
+            $filterOp = $request?->get('filterOp');
+            $filterValue = $request?->get('filterValue');
+            if (!empty($filterOp) && !empty($filterValue)) {
+                switch ($filterOp) {
+                    case 'contains':
+                        return str_contains($object->path(), $filterValue);
+
+                    case 'equals':
+                        return $object->path() === $filterValue;
+
+                    case 'startsWith':
+                        return str_starts_with($object->path(), $filterValue);
+                }
             }
 
-            $result[] = $file;
+            return true;
+        });
+
+        $files = iterator_to_array($result);
+
+        $sortOrder = $request?->get('sortOrder');
+        if (!empty($sortOrder) && in_array($sortOrder, ['ASC', 'DESC'])) {
+            if ($sortOrder === 'DESC') {
+                rsort($files);
+            } else {
+                sort($files);
+            }
         }
 
-        return $result;
+        return $files;
     }
 
-    private function getUuidForFile(string $file): string
+    private function getUuidForFile(FileAttributes $file): string
     {
-        return Uuid::uuid3('8a7f57d1-c7c7-4d96-8662-6da352b2db0b', $file)->toString();
+        return Uuid::uuid3('8a7f57d1-c7c7-4d96-8662-6da352b2db0b', $file->path())->toString();
+    }
+
+    private function getDateTimeFromTimeStamp(int $timeStamp): ?LocalDateTime
+    {
+        try {
+            return LocalDateTime::from(new DateTimeImmutable('@' . $timeStamp));
+        } catch (Exception) {
+            return null;
+        }
     }
 }

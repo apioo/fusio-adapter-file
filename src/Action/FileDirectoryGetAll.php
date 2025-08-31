@@ -20,13 +20,14 @@
 
 namespace Fusio\Adapter\File\Action;
 
-use Fusio\Engine\ActionAbstract;
 use Fusio\Engine\ContextInterface;
 use Fusio\Engine\Form\BuilderInterface;
 use Fusio\Engine\Form\ElementFactoryInterface;
 use Fusio\Engine\ParametersInterface;
 use Fusio\Engine\RequestInterface;
-use PSX\DateTime\LocalDateTime;
+use League\Flysystem\FileAttributes;
+use League\Flysystem\Filesystem;
+use League\Flysystem\FilesystemException;
 use PSX\Http\Environment\HttpResponseInterface;
 
 /**
@@ -36,7 +37,7 @@ use PSX\Http\Environment\HttpResponseInterface;
  * @license http://www.apache.org/licenses/LICENSE-2.0
  * @link    https://www.fusio-project.org/
  */
-class FileDirectoryGetAll extends ActionAbstract
+class FileDirectoryGetAll extends FileReaderAbstract
 {
     use FileDirectoryTrait;
 
@@ -47,7 +48,10 @@ class FileDirectoryGetAll extends ActionAbstract
 
     public function handle(RequestInterface $request, ParametersInterface $configuration, ContextInterface $context): HttpResponseInterface
     {
-        $directory = $this->getDirectory($configuration);
+        $connection = $this->getConnection($configuration);
+        if (!$connection instanceof Filesystem) {
+            $connection = $this->getDirectory($configuration);
+        }
 
         $startIndex = (int) $request->get('startIndex');
         $count = (int) $request->get('count');
@@ -55,78 +59,49 @@ class FileDirectoryGetAll extends ActionAbstract
         $itemsPerPage = $count >= 1 && $count <= 64 ? $count : 16;
         $startIndex   = max($startIndex, 0);
 
-        $files = $this->getFilesInDirectory($directory);
-        $files = $this->filter($request, $files);
-        $files = $this->sort($request, $files);
-
+        $files = $this->getFilesInDirectory($connection, $request);
+        $totalResults = count($files);
         $files = array_slice($files, $startIndex, $itemsPerPage);
 
         $data = [];
         foreach ($files as $file) {
-            $path = $directory . '/' . $file;
-            $modifiedTime = (string) filemtime($path);
+            if (!$file instanceof FileAttributes) {
+                continue;
+            }
+
+            try {
+                $lastModified = $this->getDateTimeFromTimeStamp($connection->lastModified($file->path()));
+            } catch (FilesystemException) {
+                $lastModified = null;
+            }
+
+            try {
+                $contentType = $connection->mimeType($file->path());
+            } catch (FilesystemException) {
+                $contentType = null;
+            }
 
             $data[] = [
                 'id' => $this->getUuidForFile($file),
-                'fileName' => $file,
-                'size' => filesize($path),
-                'contentType' => mime_content_type($path),
-                'sha1' => sha1_file($path),
-                'lastModified' => (new \DateTime('@' . $modifiedTime))->format(\DateTimeInterface::RFC3339),
+                'name' => $file->path(),
+                'size' => $file->fileSize(),
+                'contentType' => $contentType,
+                'checksum' => $connection->checksum($file->path()),
+                'lastModified' => $lastModified?->toString(),
             ];
         }
 
         return $this->response->build(200, [], [
-            'totalResults' => count($files),
+            'totalResults' => $totalResults,
             'itemsPerPage' => $itemsPerPage,
-            'startIndex'   => $startIndex,
-            'entry'        => $data,
+            'startIndex' => $startIndex,
+            'entry' => $data,
         ]);
     }
 
     public function configure(BuilderInterface $builder, ElementFactoryInterface $elementFactory): void
     {
-        $builder->add($elementFactory->newInput('directory', 'Directory', 'text', 'A path to a directory which you want expose'));
-    }
-
-    private function filter(RequestInterface $request, array $files): array
-    {
-        $filterOp    = $request->get('filterOp');
-        $filterValue = $request->get('filterValue');
-
-        if (!empty($filterOp) && !empty($filterValue)) {
-            switch ($filterOp) {
-                case 'contains':
-                    return array_filter($files, function(string $fileName) use ($filterValue): bool {
-                        return str_contains($fileName, $filterValue);
-                    });
-
-                case 'equals':
-                    return array_filter($files, function(string $fileName) use ($filterValue): bool {
-                        return $fileName === $filterValue;
-                    });
-
-                case 'startsWith':
-                    return array_filter($files, function(string $fileName) use ($filterValue): bool {
-                        return str_starts_with($fileName, $filterValue);
-                    });
-            }
-        }
-
-        return $files;
-    }
-
-    private function sort(RequestInterface $request, array $files): array
-    {
-        $sortOrder = $request->get('sortOrder');
-        if (!empty($sortOrder) && in_array($sortOrder, ['ASC', 'DESC'])) {
-            if ($sortOrder === 'DESC') {
-                rsort($files);
-            } else {
-                sort($files);
-            }
-        }
-
-        return $files;
+        $builder->add($elementFactory->newConnection('connection', 'Connection', 'The Filesystem connection which should be used, this is optional in case you provide a directory'));
+        $builder->add($elementFactory->newInput('directory', 'Directory', 'text', 'A path to a directory which you want expose, this is optional in case your provide a connection'));
     }
 }

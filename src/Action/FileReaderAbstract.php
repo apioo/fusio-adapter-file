@@ -20,17 +20,16 @@
 
 namespace Fusio\Adapter\File\Action;
 
-use Fusio\Adapter\File\Csv;
+use DateTimeInterface;
 use Fusio\Engine\ActionAbstract;
-use Fusio\Engine\Exception\ConfigurationException;
-use Fusio\Engine\Form\BuilderInterface;
-use Fusio\Engine\Form\ElementFactoryInterface;
+use Fusio\Engine\ParametersInterface;
 use Fusio\Engine\Request\HttpRequestContext;
 use Fusio\Engine\RequestInterface;
+use League\Flysystem\FileAttributes;
+use League\Flysystem\Filesystem;
+use League\Flysystem\FilesystemException;
 use PSX\Http\Environment\HttpResponseInterface;
-use PSX\Http\Writer;
-use PSX\Json\Parser;
-use Symfony\Component\Yaml\Yaml;
+use PSX\Http\Writer\Resource;
 
 /**
  * FileReaderAbstract
@@ -41,58 +40,62 @@ use Symfony\Component\Yaml\Yaml;
  */
 abstract class FileReaderAbstract extends ActionAbstract
 {
-    public function read(string $file, RequestInterface $request): HttpResponseInterface
+    protected function read(Filesystem $connection, FileAttributes $file, RequestInterface $request): HttpResponseInterface
     {
-        if (!is_file($file)) {
-            throw new ConfigurationException('Configured file does not exist');
+        $headers = [];
+
+        $checksum = $connection->checksum($file->path());
+        if (!empty($checksum)) {
+            $headers['ETag'] = '"' . $checksum . '"';
         }
 
-        $sha1  = (string) sha1_file($file);
-        $mtime = (int) filemtime($file);
-
-        $headers = [
-            'Last-Modified' => date(\DateTimeInterface::RFC3339, $mtime),
-            'ETag' => '"' . $sha1 . '"',
-        ];
+        try {
+            $lastModified = $connection->lastModified($file->path());
+            $headers['Last-Modified'] = date(DateTimeInterface::RFC3339, $lastModified);
+        } catch (FilesystemException) {
+        }
 
         $requestContext = $request->getContext();
         if ($requestContext instanceof HttpRequestContext) {
             $match = $requestContext->getRequest()->getHeader('If-None-Match');
             if (!empty($match)) {
                 $match = trim($match, '"');
-                if ($sha1 == $match) {
+                if ($checksum === $match) {
                     return $this->response->build(304, $headers, '');
                 }
             }
 
             $since = $requestContext->getRequest()->getHeader('If-Modified-Since');
             if (!empty($since)) {
-                if ($mtime < strtotime($since)) {
+                if (isset($lastModified) && $lastModified < strtotime($since)) {
                     return $this->response->build(304, $headers, '');
                 }
             }
         }
 
-        $data = match (pathinfo($file, PATHINFO_EXTENSION)) {
-            'json' => $this->wrap(Parser::decode((string) file_get_contents($file)), $file),
-            'yml', 'yaml' => $this->wrap(Yaml::parse((string) file_get_contents($file)), $file),
-            'csv' => $this->wrap(Csv::parseFile($file), $file),
-            default => new Writer\File($file),
-        };
+        $resource = $connection->readStream($file->path());
 
-        return $this->response->build(200, $headers, $data);
+        try {
+            $contentType = $connection->mimeType($file->path());
+        } catch (FilesystemException) {
+            $contentType = 'application/octet-stream';
+        }
+
+        return $this->response->build(200, $headers, new Resource($resource, $contentType));
     }
 
-    public function configure(BuilderInterface $builder, ElementFactoryInterface $elementFactory): void
+    protected function getConnection(ParametersInterface $configuration): ?Filesystem
     {
-        $builder->add($elementFactory->newInput('file', 'File', 'text', 'A path to a file'));
-    }
+        $connectionName = $configuration->get('connection');
+        if (empty($connectionName)) {
+            return null;
+        }
 
-    private function wrap(mixed $value, string $file): object
-    {
-        return (object) [
-            'fileName' => pathinfo($file, PATHINFO_BASENAME),
-            'content' => $value
-        ];
+        $connection = $this->connector->getConnection($connectionName);
+        if (!$connection instanceof Filesystem) {
+            return null;
+        }
+
+        return $connection;
     }
 }
