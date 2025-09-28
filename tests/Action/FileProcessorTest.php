@@ -26,6 +26,7 @@ use Fusio\Engine\Form\Builder;
 use Fusio\Engine\Form\Container;
 use PSX\Http\Environment\HttpResponseInterface;
 use PSX\Http\Writer;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * FileProcessorTest
@@ -47,14 +48,14 @@ class FileProcessorTest extends FileTestCase
             $this->getContext()
         );
 
-        $actual = json_encode($response->getBody(), JSON_PRETTY_PRINT);
+        /** @var Writer\Resource $body */
+        $body = $response->getBody();
+
+        $actual = stream_get_contents($body->getData());
         $expect = <<<JSON
 {
-    "fileName": "response.json",
-    "content": {
-        "foo": "bar",
-        "bar": "foo"
-    }
+  "foo": "bar",
+  "bar": "foo"
 }
 JSON;
 
@@ -75,14 +76,14 @@ JSON;
             $this->getContext()
         );
 
-        $actual = json_encode($response->getBody(), JSON_PRETTY_PRINT);
+        /** @var Writer\Resource $body */
+        $body = $response->getBody();
+
+        $actual = stream_get_contents($body->getData());
         $expect = <<<JSON
 {
-    "fileName": "response.json",
-    "content": {
-        "foo": "bar",
-        "bar": "foo"
-    }
+  "foo": "bar",
+  "bar": "foo"
 }
 JSON;
 
@@ -103,21 +104,20 @@ JSON;
             $this->getContext()
         );
 
-        $actual = json_encode($response->getBody(), JSON_PRETTY_PRINT);
-        $expect = <<<JSON
-{
-    "fileName": "response.yaml",
-    "content": {
-        "foo": "bar",
-        "bar": "foo"
-    }
-}
-JSON;
+        /** @var Writer\Resource $body */
+        $body = $response->getBody();
+
+        $actual = stream_get_contents($body->getData());
+        $actual = json_encode(Yaml::parse($actual));
+        $expect = <<<YAML
+foo: "bar"
+bar: "foo"
+YAML;
 
         $this->assertInstanceOf(HttpResponseInterface::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals($this->getExpectHeaders(__DIR__ . '/../foo/response.yaml'), $response->getHeaders());
-        $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
+        $this->assertJsonStringEqualsJsonString(json_encode(Yaml::parse($expect)), $actual, $actual);
     }
 
     public function testHandleTxt()
@@ -131,13 +131,16 @@ JSON;
             $this->getContext()
         );
 
-        /** @var Writer\File $body */
+        /** @var Writer\Resource $body */
         $body = $response->getBody();
+
+        $actual = stream_get_contents($body->getData());
+        $expect = 'foobar' . "\n";
 
         $this->assertInstanceOf(HttpResponseInterface::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals($this->getExpectHeaders(__DIR__ . '/../foo/response.txt'), $response->getHeaders());
-        $this->assertInstanceOf(Writer\File::class, $body);
+        $this->assertEquals($expect, $actual, $actual);
     }
 
     public function testHandleIfNoneMatch()
@@ -146,7 +149,7 @@ JSON;
 
         // handle request
         $response = $action->handle(
-            $this->getRequest('GET', [], [], ['If-None-Match' => '"' . sha1_file(__DIR__ . '/../foo/response.txt') . '"']),
+            $this->getRequest('GET', [], [], ['If-None-Match' => '"' . md5_file(__DIR__ . '/../foo/response.txt') . '"']),
             $this->getParameters(['file' => __DIR__ . '/../foo/response.txt']),
             $this->getContext()
         );
@@ -187,7 +190,7 @@ JSON;
     {
         return [
             'last-modified' => date(\DateTimeInterface::RFC3339, filemtime($file)),
-            'etag' => '"' . sha1_file($file) . '"'
+            'etag' => '"' . md5_file($file) . '"'
         ];
     }
 }

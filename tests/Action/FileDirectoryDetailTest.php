@@ -23,6 +23,7 @@ namespace Fusio\Adapter\File\Tests\Action;
 use Fusio\Adapter\File\Action\FileDirectoryGet;
 use Fusio\Adapter\File\Tests\FileTestCase;
 use PSX\Http\Environment\HttpResponseInterface;
+use PSX\Http\Writer;
 
 /**
  * FileDirectoryDetailTest
@@ -44,38 +45,25 @@ class FileDirectoryDetailTest extends FileTestCase
             $this->getContext()
         );
 
-        $actual = json_encode($response->getBody(), JSON_PRETTY_PRINT);
-        $expect = <<<JSON
-{
-    "fileName": "test_semicolon.csv",
-    "content": [
-        [
-            "id",
-            "name"
-        ],
-        [
-            "1",
-            "foo"
-        ],
-        [
-            "2",
-            "bar"
-        ]
-    ]
-}
-JSON;
+        /** @var Writer\Resource $body */
+        $body = $response->getBody();
+
+        $actual = stream_get_contents($body->getData());
+        $expect = 'id;name' . "\n";
+        $expect.= '1;foo' . "\n";
+        $expect.= '2;bar';
 
         $this->assertInstanceOf(HttpResponseInterface::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals($this->getExpectHeaders(__DIR__ . '/../foo/test_semicolon.csv'), $response->getHeaders());
-        $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
+        $this->assertEquals($expect, $actual, $actual);
     }
 
     private function getExpectHeaders(string $file): array
     {
         return [
             'last-modified' => date(\DateTimeInterface::RFC3339, filemtime($file)),
-            'etag' => '"' . sha1_file($file) . '"'
+            'etag' => '"' . md5_file($file) . '"'
         ];
     }
 }

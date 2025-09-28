@@ -60,51 +60,51 @@ class FileDirectoryIndexTest extends FileTestCase
     "entry": [
         {
             "id": "32643094-bf7c-3706-b004-b2312033b98e",
-            "fileName": "bar.txt",
+            "name": "bar.txt",
             "size": 6,
             "contentType": "text\/plain",
-            "sha1": "8843d7f92416211de9ebb963ff4ce28125932878",
-            "lastModified": "0000-00-00T00:00:00+00:00"
+            "checksum": "3858f62230ac3c915f300c664312c63f",
+            "lastModified": "0000-00-00T00:00:00Z"
         },
         {
             "id": "11cce436-5475-3a2b-ae62-3050c552bc71",
-            "fileName": "response.json",
+            "name": "response.json",
             "size": 34,
             "contentType": "application\/json",
-            "sha1": "2f21bd703e135f7c3daf9ee201552e1e83326665",
-            "lastModified": "0000-00-00T00:00:00+00:00"
+            "checksum": "d9e2a02f395da244bf2c7e9191ddef7d",
+            "lastModified": "0000-00-00T00:00:00Z"
         },
         {
             "id": "204bdfd3-03d7-3b08-8ab1-05cbd3642b4f",
-            "fileName": "response.txt",
+            "name": "response.txt",
             "size": 7,
             "contentType": "text\/plain",
-            "sha1": "988881adc9fc3655077dc2d4d757d480b5ea0e11",
-            "lastModified": "0000-00-00T00:00:00+00:00"
+            "checksum": "14758f1afd44c09b7992073ccf00b43d",
+            "lastModified": "0000-00-00T00:00:00Z"
         },
         {
             "id": "ed35cd2e-e450-3247-ad84-e4248d11a484",
-            "fileName": "response.yaml",
+            "name": "response.yaml",
             "size": 22,
-            "contentType": "text\/plain",
-            "sha1": "34673b5a4ecb6d85c9ff1d6e391a4455d3d05e13",
-            "lastModified": "0000-00-00T00:00:00+00:00"
+            "contentType": "text\/yaml",
+            "checksum": "fec6b0544a0d25364b74fe5841c5d4cb",
+            "lastModified": "0000-00-00T00:00:00Z"
         },
         {
             "id": "13ae3bc7-01ac-3199-b2c3-939b0fdc1682",
-            "fileName": "test_comma.csv",
+            "name": "test_comma.csv",
             "size": 19,
-            "contentType": "{$expectContentType}",
-            "sha1": "877662089544dce80691af4c7c55610161f03fd8",
-            "lastModified": "0000-00-00T00:00:00+00:00"
+            "contentType": "text\/csv",
+            "checksum": "192fabf272dfe2329c977bd18be1b6cb",
+            "lastModified": "0000-00-00T00:00:00Z"
         },
         {
             "id": "e13fe597-537e-36c2-b99a-d652c3021a36",
-            "fileName": "test_semicolon.csv",
+            "name": "test_semicolon.csv",
             "size": 19,
-            "contentType": "text\/plain",
-            "sha1": "759c145ff96ed97db41dfa923a0a9fa71f058dbe",
-            "lastModified": "0000-00-00T00:00:00+00:00"
+            "contentType": "text\/csv",
+            "checksum": "78e7a8c69c2f8253c6732a30482cfef5",
+            "lastModified": "0000-00-00T00:00:00Z"
         }
     ]
 }

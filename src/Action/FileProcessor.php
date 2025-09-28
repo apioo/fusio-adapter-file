@@ -56,6 +56,7 @@ class FileProcessor extends FileReaderAbstract
 
         if (!$connection instanceof Filesystem) {
             $baseDir = dirname($file);
+            $file = basename($file);
             $connection = new Filesystem(new LocalFilesystemAdapter($baseDir));
         }
 
