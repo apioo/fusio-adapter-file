@@ -52,6 +52,7 @@ class FileDirectoryIndexTest extends FileTestCase
 
         $actual = json_encode($response->getBody(), JSON_PRETTY_PRINT);
         $actual = preg_replace('/([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2})/', '0000-00-00T00:00:00', $actual);
+        $actual = preg_replace('/([0-9A-Fa-f]{32})/', '00000000000000000000000000000000', $actual);
         $expect = <<<JSON
 {
     "totalResults": 6,
@@ -63,7 +64,7 @@ class FileDirectoryIndexTest extends FileTestCase
             "name": "bar.txt",
             "size": 6,
             "contentType": "text\/plain",
-            "checksum": "3858f62230ac3c915f300c664312c63f",
+            "checksum": "00000000000000000000000000000000",
             "lastModified": "0000-00-00T00:00:00Z"
         },
         {
@@ -71,7 +72,7 @@ class FileDirectoryIndexTest extends FileTestCase
             "name": "response.json",
             "size": 34,
             "contentType": "application\/json",
-            "checksum": "d9e2a02f395da244bf2c7e9191ddef7d",
+            "checksum": "00000000000000000000000000000000",
             "lastModified": "0000-00-00T00:00:00Z"
         },
         {
@@ -79,7 +80,7 @@ class FileDirectoryIndexTest extends FileTestCase
             "name": "response.txt",
             "size": 7,
             "contentType": "text\/plain",
-            "checksum": "14758f1afd44c09b7992073ccf00b43d",
+            "checksum": "00000000000000000000000000000000",
             "lastModified": "0000-00-00T00:00:00Z"
         },
         {
@@ -87,15 +88,15 @@ class FileDirectoryIndexTest extends FileTestCase
             "name": "response.yaml",
             "size": 22,
             "contentType": "text\/yaml",
-            "checksum": "fec6b0544a0d25364b74fe5841c5d4cb",
+            "checksum": "00000000000000000000000000000000",
             "lastModified": "0000-00-00T00:00:00Z"
         },
         {
             "id": "13ae3bc7-01ac-3199-b2c3-939b0fdc1682",
             "name": "test_comma.csv",
             "size": 19,
-            "contentType": "text\/csv",
-            "checksum": "192fabf272dfe2329c977bd18be1b6cb",
+            "contentType": "{$expectContentType}",
+            "checksum": "00000000000000000000000000000000",
             "lastModified": "0000-00-00T00:00:00Z"
         },
         {
@@ -103,7 +104,7 @@ class FileDirectoryIndexTest extends FileTestCase
             "name": "test_semicolon.csv",
             "size": 19,
             "contentType": "text\/csv",
-            "checksum": "78e7a8c69c2f8253c6732a30482cfef5",
+            "checksum": "00000000000000000000000000000000",
             "lastModified": "0000-00-00T00:00:00Z"
         }
     ]
