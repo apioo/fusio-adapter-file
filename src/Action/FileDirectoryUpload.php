@@ -73,6 +73,7 @@ class FileDirectoryUpload extends FileReaderAbstract
 
     /**
      * @return iterable<resource>
+     * @psalm-suppress UndefinedClass
      */
     protected function getUploadedFiles(mixed $body): iterable
     {

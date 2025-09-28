@@ -60,7 +60,7 @@ trait FileDirectoryTrait
 
             $filterOp = $request?->get('filterOp');
             $filterValue = $request?->get('filterValue');
-            if (!empty($filterOp) && !empty($filterValue)) {
+            if (is_string($filterOp) && is_string($filterValue)) {
                 switch ($filterOp) {
                     case 'contains':
                         return str_contains($object->path(), $filterValue);
@@ -79,7 +79,7 @@ trait FileDirectoryTrait
         $files = iterator_to_array($result);
 
         $sortOrder = $request?->get('sortOrder');
-        if (!empty($sortOrder) && in_array($sortOrder, ['ASC', 'DESC'])) {
+        if (is_string($sortOrder) && in_array($sortOrder, ['ASC', 'DESC'])) {
             if ($sortOrder === 'DESC') {
                 rsort($files);
             } else {
