@@ -51,8 +51,9 @@ class FileDirectoryIndexTest extends FileTestCase
         }
 
         $actual = json_encode($response->getBody(), JSON_PRETTY_PRINT);
+        $actual = preg_replace('/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/', '00000000-0000-0000-0000-000000000000', $actual);
         $actual = preg_replace('/([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2})/', '0000-00-00T00:00:00', $actual);
-        $actual = preg_replace('/([0-9A-Fa-f]{32})/', '00000000000000000000000000000000', $actual);
+        $actual = preg_replace('/([0-9a-f]{32})/', '00000000000000000000000000000000', $actual);
         $expect = <<<JSON
 {
     "totalResults": 6,
@@ -60,7 +61,7 @@ class FileDirectoryIndexTest extends FileTestCase
     "startIndex": 0,
     "entry": [
         {
-            "id": "32643094-bf7c-3706-b004-b2312033b98e",
+            "id": "00000000-0000-0000-0000-000000000000",
             "name": "bar.txt",
             "size": 6,
             "contentType": "text\/plain",
@@ -68,7 +69,7 @@ class FileDirectoryIndexTest extends FileTestCase
             "lastModified": "0000-00-00T00:00:00Z"
         },
         {
-            "id": "11cce436-5475-3a2b-ae62-3050c552bc71",
+            "id": "00000000-0000-0000-0000-000000000000",
             "name": "response.json",
             "size": 34,
             "contentType": "application\/json",
@@ -76,7 +77,7 @@ class FileDirectoryIndexTest extends FileTestCase
             "lastModified": "0000-00-00T00:00:00Z"
         },
         {
-            "id": "204bdfd3-03d7-3b08-8ab1-05cbd3642b4f",
+            "id": "00000000-0000-0000-0000-000000000000",
             "name": "response.txt",
             "size": 7,
             "contentType": "text\/plain",
@@ -84,7 +85,7 @@ class FileDirectoryIndexTest extends FileTestCase
             "lastModified": "0000-00-00T00:00:00Z"
         },
         {
-            "id": "ed35cd2e-e450-3247-ad84-e4248d11a484",
+            "id": "00000000-0000-0000-0000-000000000000",
             "name": "response.yaml",
             "size": 22,
             "contentType": "text\/yaml",
@@ -92,7 +93,7 @@ class FileDirectoryIndexTest extends FileTestCase
             "lastModified": "0000-00-00T00:00:00Z"
         },
         {
-            "id": "13ae3bc7-01ac-3199-b2c3-939b0fdc1682",
+            "id": "00000000-0000-0000-0000-000000000000",
             "name": "test_comma.csv",
             "size": 19,
             "contentType": "{$expectContentType}",
@@ -100,7 +101,7 @@ class FileDirectoryIndexTest extends FileTestCase
             "lastModified": "0000-00-00T00:00:00Z"
         },
         {
-            "id": "e13fe597-537e-36c2-b99a-d652c3021a36",
+            "id": "00000000-0000-0000-0000-000000000000",
             "name": "test_semicolon.csv",
             "size": 19,
             "contentType": "text\/csv",
