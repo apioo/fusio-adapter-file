@@ -44,12 +44,6 @@ class FileDirectoryIndexTest extends FileTestCase
             $this->getContext()
         );
 
-        if (PHP_VERSION_ID >= 80400) {
-            $expectContentType = 'text/csv';
-        } else {
-            $expectContentType = 'text/plain';
-        }
-
         $actual = json_encode($response->getBody(), JSON_PRETTY_PRINT);
         $actual = preg_replace('/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/', '00000000-0000-0000-0000-000000000000', $actual);
         $actual = preg_replace('/([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2})/', '0000-00-00T00:00:00', $actual);
@@ -96,7 +90,7 @@ class FileDirectoryIndexTest extends FileTestCase
             "id": "00000000-0000-0000-0000-000000000000",
             "name": "test_comma.csv",
             "size": 19,
-            "contentType": "{$expectContentType}",
+            "contentType": "text\/csv",
             "checksum": "00000000000000000000000000000000",
             "lastModified": "0000-00-00T00:00:00Z"
         },
