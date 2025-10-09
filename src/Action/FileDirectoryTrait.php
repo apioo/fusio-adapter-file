@@ -28,6 +28,7 @@ use Fusio\Engine\RequestInterface;
 use League\Flysystem\FileAttributes;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Local\LocalFilesystemAdapter;
+use League\Flysystem\StorageAttributes;
 use PSX\DateTime\LocalDateTime;
 use Ramsey\Uuid\Uuid;
 
@@ -79,12 +80,14 @@ trait FileDirectoryTrait
         $files = iterator_to_array($result);
 
         $sortOrder = $request?->get('sortOrder');
-        if (is_string($sortOrder) && in_array($sortOrder, ['ASC', 'DESC'])) {
-            if ($sortOrder === 'DESC') {
-                rsort($files);
-            } else {
-                sort($files);
-            }
+        if ($sortOrder === 'DESC') {
+            usort($files, static function (StorageAttributes $a, StorageAttributes $b) {
+                return strcasecmp($b->path(), $a->path());
+            });
+        } else {
+            usort($files, static function (StorageAttributes $a, StorageAttributes $b) {
+                return strcasecmp($a->path(), $b->path());
+            });
         }
 
         return $files;
