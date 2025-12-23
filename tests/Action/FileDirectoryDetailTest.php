@@ -20,6 +20,7 @@
 
 namespace Fusio\Adapter\File\Tests\Action;
 
+use DateTimeInterface;
 use Fusio\Adapter\File\Action\FileDirectoryGet;
 use Fusio\Adapter\File\Tests\FileTestCase;
 use PSX\Http\Environment\HttpResponseInterface;
@@ -34,7 +35,7 @@ use PSX\Http\Writer;
  */
 class FileDirectoryDetailTest extends FileTestCase
 {
-    public function testHandle()
+    public function testHandle(): void
     {
         $action = $this->getActionFactory()->factory(FileDirectoryGet::class);
 
@@ -59,10 +60,13 @@ class FileDirectoryDetailTest extends FileTestCase
         $this->assertEquals($expect, $actual, $actual);
     }
 
+    /**
+     * @return array<string, string>
+     */
     private function getExpectHeaders(string $file): array
     {
         return [
-            'last-modified' => date(\DateTimeInterface::RFC3339, filemtime($file)),
+            'last-modified' => date(DateTimeInterface::RFC3339, filemtime($file) ?: time()),
             'etag' => '"' . md5_file($file) . '"'
         ];
     }

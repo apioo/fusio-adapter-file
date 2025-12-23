@@ -20,12 +20,15 @@
 
 namespace Fusio\Adapter\File\Tests\Action;
 
+use DateTimeInterface;
 use Fusio\Adapter\File\Action\FileProcessor;
 use Fusio\Adapter\File\Tests\FileTestCase;
+use Fusio\Engine\ConfigurableInterface;
 use Fusio\Engine\Form\Builder;
 use Fusio\Engine\Form\Container;
 use PSX\Http\Environment\HttpResponseInterface;
 use PSX\Http\Writer;
+use PSX\Json\Parser;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -37,7 +40,7 @@ use Symfony\Component\Yaml\Yaml;
  */
 class FileProcessorTest extends FileTestCase
 {
-    public function testHandle()
+    public function testHandle(): void
     {
         $action = $this->getActionFactory()->factory(FileProcessor::class);
 
@@ -65,7 +68,7 @@ JSON;
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }
 
-    public function testHandleJson()
+    public function testHandleJson(): void
     {
         $action = $this->getActionFactory()->factory(FileProcessor::class);
 
@@ -93,7 +96,7 @@ JSON;
         $this->assertJsonStringEqualsJsonString($expect, $actual, $actual);
     }
 
-    public function testHandleYaml()
+    public function testHandleYaml(): void
     {
         $action = $this->getActionFactory()->factory(FileProcessor::class);
 
@@ -108,7 +111,7 @@ JSON;
         $body = $response->getBody();
 
         $actual = stream_get_contents($body->getData());
-        $actual = json_encode(Yaml::parse($actual));
+        $actual = Parser::encode(Yaml::parse($actual));
         $expect = <<<YAML
 foo: "bar"
 bar: "foo"
@@ -117,10 +120,10 @@ YAML;
         $this->assertInstanceOf(HttpResponseInterface::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals($this->getExpectHeaders(__DIR__ . '/../foo/response.yaml'), $response->getHeaders());
-        $this->assertJsonStringEqualsJsonString(json_encode(Yaml::parse($expect)), $actual, $actual);
+        $this->assertJsonStringEqualsJsonString(Parser::encode(Yaml::parse($expect)), $actual, $actual);
     }
 
-    public function testHandleTxt()
+    public function testHandleTxt(): void
     {
         $action = $this->getActionFactory()->factory(FileProcessor::class);
 
@@ -143,7 +146,7 @@ YAML;
         $this->assertEquals($expect, $actual, $actual);
     }
 
-    public function testHandleIfNoneMatch()
+    public function testHandleIfNoneMatch(): void
     {
         $action = $this->getActionFactory()->factory(FileProcessor::class);
 
@@ -159,7 +162,7 @@ YAML;
         $this->assertEquals($this->getExpectHeaders(__DIR__ . '/../foo/response.txt'), $response->getHeaders());
     }
 
-    public function testHandleIfModifiedSince()
+    public function testHandleIfModifiedSince(): void
     {
         $action = $this->getActionFactory()->factory(FileProcessor::class);
 
@@ -175,21 +178,26 @@ YAML;
         $this->assertEquals($this->getExpectHeaders(__DIR__ . '/../foo/response.txt'), $response->getHeaders());
     }
 
-    public function testGetForm()
+    public function testGetForm(): void
     {
         $action  = $this->getActionFactory()->factory(FileProcessor::class);
         $builder = new Builder();
         $factory = $this->getFormElementFactory();
+
+        $this->assertInstanceOf(ConfigurableInterface::class, $action);
 
         $action->configure($builder, $factory);
 
         $this->assertInstanceOf(Container::class, $builder->getForm());
     }
 
+    /**
+     * @return array<string, string>
+     */
     private function getExpectHeaders(string $file): array
     {
         return [
-            'last-modified' => date(\DateTimeInterface::RFC3339, filemtime($file)),
+            'last-modified' => date(DateTimeInterface::RFC3339, filemtime($file) ?: time()),
             'etag' => '"' . md5_file($file) . '"'
         ];
     }

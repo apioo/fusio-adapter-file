@@ -29,6 +29,11 @@ namespace Fusio\Adapter\File;
  */
 class Csv
 {
+    /**
+     * @param string $file
+     * @param string|null $delimiter
+     * @return array<list<string|null>>
+     */
     public static function parseFile(string $file, ?string $delimiter = null): array
     {
         if ($delimiter === null || strlen($delimiter) !== 1) {

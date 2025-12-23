@@ -73,23 +73,27 @@ class FileDirectoryUpload extends FileReaderAbstract
 
     /**
      * @return iterable<resource>
-     * @psalm-suppress UndefinedClass
      */
     protected function getUploadedFiles(mixed $body): iterable
     {
+        /** @phpstan-ignore class.notFound */
         if (!$body instanceof Body) {
             throw new StatusCode\BadRequestException('Request must be an multipart form upload');
         }
 
+        /** @phpstan-ignore class.notFound */
         foreach ($body->getAll() as $part) {
+            /** @phpstan-ignore class.notFound */
             if (!$part instanceof File) {
                 continue;
             }
 
+            /** @phpstan-ignore class.notFound */
             if ($part->getError() !== UPLOAD_ERR_OK) {
                 throw new StatusCode\BadRequestException('There was an error with the file upload');
             }
 
+            /** @phpstan-ignore class.notFound */
             $name = $part->getName();
             if (empty($name)) {
                 throw new StatusCode\BadRequestException('Provided no file name');
@@ -99,6 +103,7 @@ class FileDirectoryUpload extends FileReaderAbstract
                 throw new StatusCode\BadRequestException('Provided file name contains invalid characters');
             }
 
+            /** @phpstan-ignore class.notFound */
             $tmpName = $part->getTmpName();
             if (empty($tmpName) || !is_file($tmpName)) {
                 throw new StatusCode\BadRequestException('Could not find uploaded file');

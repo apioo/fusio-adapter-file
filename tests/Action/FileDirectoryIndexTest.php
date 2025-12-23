@@ -23,6 +23,7 @@ namespace Fusio\Adapter\File\Tests\Action;
 use Fusio\Adapter\File\Action\FileDirectoryGetAll;
 use Fusio\Adapter\File\Tests\FileTestCase;
 use PSX\Http\Environment\HttpResponseInterface;
+use PSX\Json\Parser;
 
 /**
  * FileDirectoryIndexTest
@@ -33,7 +34,7 @@ use PSX\Http\Environment\HttpResponseInterface;
  */
 class FileDirectoryIndexTest extends FileTestCase
 {
-    public function testHandle()
+    public function testHandle(): void
     {
         $action = $this->getActionFactory()->factory(FileDirectoryGetAll::class);
 
@@ -44,10 +45,10 @@ class FileDirectoryIndexTest extends FileTestCase
             $this->getContext()
         );
 
-        $actual = json_encode($response->getBody(), JSON_PRETTY_PRINT);
-        $actual = preg_replace('/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/', '00000000-0000-0000-0000-000000000000', $actual);
-        $actual = preg_replace('/([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2})/', '0000-00-00T00:00:00', $actual);
-        $actual = preg_replace('/([0-9a-f]{32})/', '00000000000000000000000000000000', $actual);
+        $actual = Parser::encode($response->getBody(), JSON_PRETTY_PRINT);
+        $actual = (string) preg_replace('/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/', '00000000-0000-0000-0000-000000000000', $actual);
+        $actual = (string) preg_replace('/([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2})/', '0000-00-00T00:00:00', $actual);
+        $actual = (string) preg_replace('/([0-9a-f]{32})/', '00000000000000000000000000000000', $actual);
         $expect = <<<JSON
 {
     "totalResults": 6,

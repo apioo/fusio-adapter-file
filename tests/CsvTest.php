@@ -32,7 +32,7 @@ use PHPUnit\Framework\TestCase;
  */
 class CsvTest extends TestCase
 {
-    public function testParseFileSemicolon()
+    public function testParseFileSemicolon(): void
     {
         $actual = Csv::parseFile(__DIR__ . '/foo/test_semicolon.csv');
         $expect = [
@@ -44,7 +44,7 @@ class CsvTest extends TestCase
         $this->assertEquals($expect, $actual);
     }
 
-    public function testParseFileComma()
+    public function testParseFileComma(): void
     {
         $actual = Csv::parseFile(__DIR__ . '/foo/test_comma.csv', ',');
         $expect = [

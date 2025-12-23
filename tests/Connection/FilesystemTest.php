@@ -22,6 +22,7 @@ namespace Fusio\Adapter\File\Tests\Connection;
 
 use Fusio\Adapter\File\Connection\Filesystem;
 use Fusio\Adapter\File\Tests\FileTestCase;
+use Fusio\Engine\ConfigurableInterface;
 use Fusio\Engine\Form\Builder;
 use Fusio\Engine\Form\Container;
 use Fusio\Engine\Form\Element\Input;
@@ -37,7 +38,7 @@ use League\Flysystem\FilesystemOperator;
  */
 class FilesystemTest extends FileTestCase
 {
-    public function testGetConnection()
+    public function testGetConnection(): void
     {
         /** @var Filesystem $connectionFactory */
         $connectionFactory = $this->getConnectionFactory()->factory(Filesystem::class);
@@ -52,11 +53,13 @@ class FilesystemTest extends FileTestCase
         $this->assertEquals('foobar', $filesystem->read('bar.txt'));
     }
 
-    public function testConfigure()
+    public function testConfigure(): void
     {
         $connection = $this->getConnectionFactory()->factory(Filesystem::class);
         $builder    = new Builder();
         $factory    = $this->getFormElementFactory();
+
+        $this->assertInstanceOf(ConfigurableInterface::class, $connection);
 
         $connection->configure($builder, $factory);
 

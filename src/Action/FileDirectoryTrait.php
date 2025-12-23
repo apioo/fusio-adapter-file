@@ -51,6 +51,9 @@ trait FileDirectoryTrait
         return new Filesystem(new LocalFilesystemAdapter($directory));
     }
 
+    /**
+     * @return list<FileAttributes>
+     */
     private function getFilesInDirectory(Filesystem $connection, ?RequestInterface $request): array
     {
         $result = $connection->listContents('.');
@@ -77,6 +80,7 @@ trait FileDirectoryTrait
             return true;
         });
 
+        /** @var list<FileAttributes> $files */
         $files = iterator_to_array($result);
 
         $sortOrder = $request?->get('sortOrder');
