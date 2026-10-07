@@ -53,12 +53,7 @@ class FileDirectoryGet extends FileReaderAbstract
             $connection = $this->getDirectory($configuration);
         }
 
-        $id = $request->get('id');
-        if (empty($id)) {
-            throw new StatusCode\BadRequestException('No id provided');
-        }
-
-        $file = $this->findFileById($connection, $id);
+        $file = $this->findFileById($connection, $this->getId($request));
         if (!$file instanceof FileAttributes) {
             throw new StatusCode\NotFoundException('Provided id does not exist');
         }
@@ -83,5 +78,20 @@ class FileDirectoryGet extends FileReaderAbstract
         }
 
         return null;
+    }
+
+    private function getId(RequestInterface $request): string
+    {
+        $id = $request->get('id');
+        if (!empty($id) && is_string($id)) {
+            return $id;
+        }
+
+        $id = $request->get('file_id');
+        if (!empty($id) && is_string($id)) {
+            return $id;
+        }
+
+        throw new StatusCode\BadRequestException('No id provided');
     }
 }
