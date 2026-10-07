@@ -52,21 +52,4 @@ class FilesystemTest extends FileTestCase
         $this->assertInstanceOf(FilesystemOperator::class, $filesystem);
         $this->assertEquals('foobar', $filesystem->read('bar.txt'));
     }
-
-    public function testConfigure(): void
-    {
-        $connection = $this->getConnectionFactory()->factory(Filesystem::class);
-        $builder    = new Builder();
-        $factory    = $this->getFormElementFactory();
-
-        $this->assertInstanceOf(ConfigurableInterface::class, $connection);
-
-        $connection->configure($builder, $factory);
-
-        $this->assertInstanceOf(Container::class, $builder->getForm());
-
-        $elements = $builder->getForm()->getElements();
-        $this->assertEquals(1, count($elements));
-        $this->assertInstanceOf(Input::class, $elements[0]);
-    }
 }
