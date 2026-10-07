@@ -22,6 +22,7 @@ namespace Fusio\Adapter\File\Generator;
 
 use Fusio\Adapter\File\Action\FileDirectoryGet;
 use Fusio\Adapter\File\Action\FileDirectoryGetAll;
+use Fusio\Engine\Exception\ConfigurationException;
 use Fusio\Engine\Factory\Resolver\PhpClass;
 use Fusio\Engine\Form\BuilderInterface;
 use Fusio\Engine\Form\ElementFactoryInterface;
@@ -56,15 +57,12 @@ class FileDirectory implements ProviderInterface
 
     public function setup(SetupInterface $setup, ParametersInterface $configuration): void
     {
-        $directory = $configuration->get('directory');
-        if (!is_dir($directory)) {
-            throw new \RuntimeException('Provided directory does not exist');
-        }
+        $config = $this->buildConfig($configuration);
 
         $setup->addSchema($this->makeGetAllSchema());
 
-        $setup->addAction($this->makeGetAllAction($directory));
-        $setup->addAction($this->makeGetAction($directory));
+        $setup->addAction($this->makeGetAllAction($config));
+        $setup->addAction($this->makeGetAction($config));
 
         $setup->addOperation($this->makeGetAllOperation());
         $setup->addOperation($this->makeGetOperation());
@@ -72,7 +70,31 @@ class FileDirectory implements ProviderInterface
 
     public function configure(BuilderInterface $builder, ElementFactoryInterface $elementFactory): void
     {
+        $builder->add($elementFactory->newConnection('connection', 'Connection', 'The Filesystem connection which should be used'));
         $builder->add($elementFactory->newInput('directory', 'Directory', 'text', 'A path to a directory which you want expose'));
+    }
+
+    private function buildConfig(ParametersInterface $configuration): ActionConfig
+    {
+        $connection = $configuration->get('connection');
+        if (!empty($connection)) {
+            return ActionConfig::fromArray([
+                'connection' => $connection,
+            ]);
+        }
+
+        $directory = $configuration->get('directory');
+        if (!empty($directory)) {
+            if (!is_dir($directory)) {
+                throw new ConfigurationException('Provided directory does not exist');
+            }
+
+            return ActionConfig::fromArray([
+                'directory' => $directory,
+            ]);
+        }
+
+        throw new ConfigurationException('Provided neither a connection nor a directory');
     }
 
     private function makeGetAllSchema(): SchemaCreate
@@ -83,25 +105,21 @@ class FileDirectory implements ProviderInterface
         return $schema;
     }
 
-    private function makeGetAllAction(string $directory): ActionCreate
+    private function makeGetAllAction(ActionConfig $config): ActionCreate
     {
         $action = new ActionCreate();
         $action->setName(self::ACTION_GET_ALL);
         $action->setClass(FileDirectoryGetAll::class);
-        $action->setConfig(ActionConfig::fromArray([
-            'directory' => $directory,
-        ]));
+        $action->setConfig($config);
         return $action;
     }
 
-    private function makeGetAction(string $directory): ActionCreate
+    private function makeGetAction(ActionConfig $config): ActionCreate
     {
         $action = new ActionCreate();
         $action->setName(self::ACTION_GET);
         $action->setClass(FileDirectoryGet::class);
-        $action->setConfig(ActionConfig::fromArray([
-            'directory' => $directory,
-        ]));
+        $action->setConfig($config);
         return $action;
     }
 
