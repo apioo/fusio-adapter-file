@@ -23,7 +23,6 @@ namespace Fusio\Adapter\File\Generator;
 use Fusio\Adapter\File\Action\FileDirectoryGet;
 use Fusio\Adapter\File\Action\FileDirectoryGetAll;
 use Fusio\Engine\Exception\ConfigurationException;
-use Fusio\Engine\Factory\Resolver\PhpClass;
 use Fusio\Engine\Form\BuilderInterface;
 use Fusio\Engine\Form\ElementFactoryInterface;
 use Fusio\Engine\Generator\ProviderInterface;
